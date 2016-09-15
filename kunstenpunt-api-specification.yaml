@@ -15,6 +15,9 @@ info:
     
     Tot slot zijn er nog eindpunten voorzien voor Genres en Locaties. In locaties worden hier enkel fysieke locaties gevat, en geen 'ruimtes'. Een ruimte is een organisationele structuur, bv. een theater, en valt daardoor onder een organiteit. De fysieke locatie, bv. een stad, wordt wel bijgehouden in Locaties.
     
+    
+    Technisch gesproken wordt in alle requests die een array teruggeven de totale lengte aangegeven in een x-total-count header.
+    
   version: "0"
 host: localhost:5000
 schemes:
@@ -38,7 +41,7 @@ paths:
           type: integer
         - name: activiteit_id
           in: query
-          description: De unieke id van een activiteit.
+          description: De unieke id van een activiteit. Deze query levert ook terug wat de relatie is tussen de gevonden organiteiten en de gevraagde activiteit
           required: false
           type: integer
         - name: genre_id
@@ -55,7 +58,17 @@ paths:
           in: query
           required: false
           type: integer
-          description: Om organiteiten gelinkt aan andere organiteiten te vinden
+          description: Om organiteiten gelinkt aan andere organiteiten te vinden. Deze query levert ook terug wat de relatie is tussen de gevonden organiteiten en de gevraagde organiteit.
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Organiteit
       responses:
@@ -106,6 +119,16 @@ paths:
           description: De unieke identificator van een bepaalde organiteit.
           required: false
           type: integer
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Organiteit
       responses:
@@ -144,6 +167,16 @@ paths:
           description: De organiteit waarom het album gerelateerd mag zijn.
           required: false
           type: integer
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Muziek
       responses:
@@ -194,6 +227,28 @@ paths:
           description: Een id van een organiteit om de buitenlandse concerten van te vinden.
           required: false
           type: integer
+        - name: from_date
+          in: query
+          description: De vroegste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: until_date
+          in: query
+          description: De laatste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Muziek
       responses:
@@ -225,6 +280,28 @@ paths:
           description: Een id van een podiumproductie om de gerelateerde producties te vinden, bv. een herneming.
           required: false
           type: integer
+        - name: from_date
+          in: query
+          description: De vroegste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: until_date
+          in: query
+          description: De laatste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Podium
       responses:
@@ -275,6 +352,28 @@ paths:
           description: Een id van een organiteit om de podium voorstellingen te vinden.
           required: false
           type: integer
+        - name: from_date
+          in: query
+          description: De vroegste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: until_date
+          in: query
+          description: De laatste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Podium
       responses:
@@ -301,6 +400,28 @@ paths:
           description: Een id van een organiteit om de solotentoonstelling te vinden.
           required: false
           type: integer
+        - name: from_date
+          in: query
+          description: De vroegste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: until_date
+          in: query
+          description: De laatste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Beeldende kunsten
       responses:
@@ -352,6 +473,28 @@ paths:
           description: Een id van een organiteit om de kunst in opdracht te vinden.
           required: false
           type: integer
+        - name: from_date
+          in: query
+          description: De vroegste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: until_date
+          in: query
+          description: De laatste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Beeldende kunsten
       responses:
@@ -378,6 +521,28 @@ paths:
           description: Een id van een organiteit om de opleidingen te vinden.
           required: false
           type: integer
+        - name: from_date
+          in: query
+          description: De vroegste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: until_date
+          in: query
+          description: De laatste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Beeldende kunsten
       responses:
@@ -404,6 +569,28 @@ paths:
           description: Een id van een organiteit om de residenties te vinden.
           required: false
           type: integer
+        - name: from_date
+          in: query
+          description: De vroegste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: until_date
+          in: query
+          description: De laatste datum waarop het album gereleased mag zijn.
+          required: false
+          type: string
+          format: date
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Beeldende kunsten
       responses:
@@ -435,6 +622,16 @@ paths:
           description: De ID van een specifiek type van organiteit, bv. een theatergezelschap.
           required: false
           type: integer
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Genre
       responses:
@@ -466,6 +663,16 @@ paths:
           description: De ID van een specifieke organiteit.
           required: false
           type: integer
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Locatie
       responses:
@@ -474,8 +681,7 @@ paths:
           schema:
             type: array
             items:
-              type: integer
-              description: ID van een locatie (stad)
+              $ref: '#/definitions/IdMetNaamEnRelatie'
         default:
           description: Onverwachte fout
           schema:
@@ -517,6 +723,16 @@ paths:
           required: false
           description: De ID van een organiteit om de lijst in te perken.
           type: integer
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          description: Voor paginatie
       tags:
         - Functie
       responses:
@@ -730,7 +946,7 @@ definitions:
         description: Informatie over het concept achter de drager, bv. LP.
       catalogus_nummer:
         type: string
-        description: CHECK MET Q
+        description: Positie in catalogus
       release_datum:
         type: string
         format: date
