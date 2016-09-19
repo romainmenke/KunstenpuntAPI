@@ -1,4 +1,14 @@
 # KunstenpuntAPI
-Het design en documentatie van de Kunstenpunt API als een openAPI (swagger) specificatie.
 
-In afwachting van een UI, kopieer de specificatie naar editor.swagger.io om gemakkelijk de API te verkennen.
+Een eerste aanzet tot een integrerende API server.
+
+$ git clone https://github.com/Kunstenpunt/KunstenpuntAPI
+$ cd KunstenpuntAPI/api
+
+Geef databank user/pass in file db.cfg (naar voorbeeld van db_example.cfg).
+
+Run de Python Flask server met python3
+
+$ python3 app.py
+
+API server beschikbaar op localhost:8080/v0/ui/
