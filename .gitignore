@@ -1,0 +1,5 @@
+api/controllers/tests/db.cfg
+api/db.cfg
+python-flask-server_old/
+.DS_Store
+.idea
