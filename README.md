@@ -3,6 +3,7 @@
 Een eerste aanzet tot een integrerende API server.
 
 $ git clone https://github.com/Kunstenpunt/KunstenpuntAPI
+
 $ cd KunstenpuntAPI/api
 
 Geef databank user/pass in file db.cfg (naar voorbeeld van db_example.cfg).
