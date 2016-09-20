@@ -1120,8 +1120,13 @@ definitions:
           \ lijst van de main artists track verschilt (niet qua volgorde) van de volledige\
           \ lijst 'main artists' van de release."
         items:
-          type: "string"
-          description: "Een main artist."
+          type: "object"
+          description: "Een main artist met zijn ID."
+          properties:
+            toonnaam:
+              type: string
+            id:
+              type: integer
       versie_info:
         type: "string"
         description: "Versie informatie over de track."
