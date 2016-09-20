@@ -32,11 +32,16 @@ def locaties_locatie_id_get(locatieId) -> str:
 def buitenlandse_concerten_get(offset, limit, organiteitId = None, fromDate = None, untilDate = None) -> str:
     return 'do some magic!'
 
-def releases_activiteit_id_get(activiteitId) -> str:
-    return 'do some magic!'
+def releases_activiteit_id_get(activiteit_id) -> str:
+    activiteit_id_str = str(activiteit_id)
+    if int(activiteit_id_str[0]) == mcv_carriers.db_id and int(activiteit_id_str[1]) == mcv_carriers.table_id:
+        return mcv_carriers.get_release_with_id(int(activiteit_id_str[2:]))
+    else:
+        return {}
 
 def releases_get(offset, limit, from_date = None, until_date = None, organiteit_id = None) -> str:
-#    if str(organiteit_id)[0] != mcv.db_id:
+#TODO globale ID strategie nog niet geimplementeerd
+#     if str(organiteit_id)[0] != mcv.db_id:
 #        organiteit_id = GET MCV ORGANITEIT UIT DATA.KUNSTEN.BE veld
 
     if from_date is None and until_date is None and organiteit_id is None:
