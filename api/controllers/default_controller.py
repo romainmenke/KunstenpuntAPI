@@ -50,35 +50,10 @@ def releases_get(offset, limit, from_date = None, until_date = None, organiteit_
         count, payload = mcv_carriers.get_list_of_carriers_in_period(from_date, until_date, limit, offset)
     elif organiteit_id is not None and from_date is None and until_date is None:
         local_id = str(organiteit_id)[2:]
-        count = 0
-        payload = []
         if int(str(organiteit_id)[1]) == mcv_identities.table_id:
-            count_ma, payload_ma = mcv_carriers.get_list_of_carriers_by_identity_as_main_artist(local_id, limit, offset)
-            count += count_ma
-            if count_ma > 0:
-                payload.extend(payload_ma)
-            count_member, payload_member = mcv_carriers.get_list_of_carriers_by_identity_as_member(local_id, limit, offset)
-            count += count_member
-            if count_member > 0:
-                payload.extend(payload_member)
-            count_componist, payload_componist = mcv_carriers.get_list_of_carriers_by_identity_as_composer(local_id, limit, offset)
-            count += count_componist
-            if count_componist > 0:
-                payload.extend(payload_componist)
+            count, payload = mcv_carriers.get_list_of_carriers_by_identity(local_id, limit, offset)
         elif int(str(organiteit_id)[1]) == mcv_organisations.table_id:
-            count_label, payload_label = mcv_carriers.get_list_of_carriers_by_organisation_as_label(local_id, limit, offset)
-            count += count_label
-            if count_label > 0:
-                payload.extend(payload_label)
-            count_publisher, payload_publisher = mcv_carriers.get_list_of_carriers_by_organisation_as_publisher(local_id, limit, offset)
-            count += count_publisher
-            if count_publisher > 0:
-                payload.extend(payload_publisher)
-            count_distributor, payload_distributor = mcv_carriers.get_list_of_carriers_by_organisation_as_distributor(local_id, limit, offset)
-            count += count_distributor
-            if count_distributor > 0:
-                payload.extend(payload_distributor)
-        payload.sort(key=lambda x: x['datum'], reverse=True)
+            count, payload = mcv_carriers.get_list_of_carriers_by_organisation(local_id, limit, offset)
     else:
         count = -1
         payload = None
@@ -87,7 +62,7 @@ def releases_get(offset, limit, from_date = None, until_date = None, organiteit_
 
     return resp
 
-def organiteiten_get(offset, limit, organiteitTypeId = None, activiteitId = None, genreId = None, locatieId = None, organiteitId = None) -> str:
+def organiteiten_get(offset, limit, organiteitTypeId = None, activiteit_id = None, genreId = None, locatieId = None, organiteitId = None) -> str:
     return 'do some magic!'
 
 def organiteiten_organiteit_id_get(organiteitId) -> str:

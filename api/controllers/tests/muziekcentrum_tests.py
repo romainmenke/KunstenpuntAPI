@@ -22,3 +22,11 @@ class TestMuziekcentrum(TestCase):
         payload = self.carriers.get_release_with_id(75286)
         payload = self.carriers.get_release_with_id(89300)
         print(payload)
+
+    def test_get_release_from_identity(self):
+        payload = self.carriers.get_list_of_carriers_by_identity(132418, 100, 0)
+        print(payload)
+
+    def test_get_release_from_organisation(self):
+        payload = self.carriers.get_list_of_carriers_by_organisation(18472, 100, 0)
+        print(payload)

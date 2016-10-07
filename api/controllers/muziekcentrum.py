@@ -12,7 +12,7 @@ class MCV:
                       user=mcv_settings['Muziekcentrum']['user'],
                       passwd=mcv_settings['Muziekcentrum']['pass'],
                       db=mcv_settings['Muziekcentrum']['db'],
-                      sql_mode="TRADITIONAL,ALLOW_INVALID_DATES")
+                      sql_mode="ALLOW_INVALID_DATES")
         self.mcv_cur = mcv.cursor()
 
 
@@ -36,7 +36,8 @@ class Carriers(MCV):
         payload_item = {
             "id": id,
             "toonnaam": toonnaam,
-            "datum": str(row[3])
+            "datum": str(row[3]),
+            "rol": str(row[4]) if len(row) > 4 else None
         }
         return payload_item
 
@@ -66,59 +67,31 @@ class Carriers(MCV):
                        WHERE ReleaseDate > '{0}' AND ReleaseDate < '{1}';""".format(from_date, until_date)
         return self._get_count_and_payload(sql_payload, sql_count)
 
-    def get_list_of_carriers_by_identity_as_main_artist(self, organiteit_id, limit, offset):
-        sql_payload = """SELECT DISTINCT c.ID, c.Title, c.VersionInfo, c.ReleaseDate
+    def get_list_of_carriers_by_identity(self, organiteit_id, limit, offset):
+        sql_payload = """SELECT DISTINCT c.ID, c.Title, c.VersionInfo, c.ReleaseDate, mac.Name
                          FROM carriers c
-                         INNER JOIN carriermainartists cm ON cm.CarrierID=c.ID
-                         WHERE cm.IdentityID={0} AND
-                               cm.ContextID IN (1,3,4,5,6) AND
-                               ((c.Filter & 2)=2) AND c.Hidden=0
+                         LEFT JOIN carriermembers cm ON cm.CarrierID=c.ID
+                         LEFT JOIN carriermainartists cma ON cma.CarrierID=c.ID
+                         LEFT JOIN mainartistcontext mac ON cma.ContextID=mac.ID
+                         WHERE (cm.IdentityID={0} OR cma.IdentityID={0}) AND c.Hidden=0 AND ((c.Filter & 2) = 2)
                          ORDER BY ReleaseDate DESC
                          LIMIT {1} OFFSET {2}""".format(str(organiteit_id), str(limit), str(offset))
         sql_count = """SELECT DISTINCT count(c.ID)
                        FROM carriers c
-                       INNER JOIN carriermainartists cm ON cm.CarrierID=c.ID
-                       WHERE cm.IdentityID={0} AND
-                             cm.ContextID IN (1,3,4,5,6) AND
-                             ((c.Filter & 2)=2) AND c.Hidden=0""".format(str(organiteit_id))
+                        LEFT JOIN carriermembers cm ON cm.CarrierID=c.ID
+                        LEFT JOIN carriermainartists cma ON cma.CarrierID=c.ID
+                        WHERE (cm.IdentityID={0} OR cma.IdentityID={0})
+                          AND c.Hidden=0 AND ((c.Filter & 2) = 2)""".format(str(organiteit_id))
         return self._get_count_and_payload(sql_payload, sql_count)
 
-    def get_list_of_carriers_by_identity_as_member(self, organiteit_id, limit, offset):
-        sql_payload = """SELECT DISTINCT c.ID, c.Title, c.VersionInfo, c.ReleaseDate
-                         FROM carriers c
-                         INNER JOIN carriermembers cm ON cm.CarrierID=c.ID
-                         WHERE cm.IdentityID={0} AND c.Hidden=0
-                         ORDER BY ReleaseDate DESC
-                         LIMIT {1} OFFSET {2}""".format(str(organiteit_id), str(limit), str(offset))
-        sql_count = """SELECT DISTINCT count(c.ID)
-                       FROM carriers c
-                       INNER JOIN carriermembers cm ON cm.CarrierID=c.ID
-                       WHERE cm.IdentityID={0} AND c.Hidden=0""".format(str(organiteit_id))
-        return self._get_count_and_payload(sql_payload, sql_count)
-
-    def get_list_of_carriers_by_identity_as_composer(self, organiteit_id, limit, offset):
-        sql_payload = """SELECT DISTINCT c.ID, c.Title, c.VersionInfo, c.ReleaseDate
-                         FROM carriers c INNER JOIN carriermainartists cm ON cm.CarrierID=c.ID
-                         WHERE cm.IdentityID={0} AND
-                               cm.ContextID=2 AND
-                               ((c.Filter & 2)=2) AND c.Hidden=0
-                         ORDER BY ReleaseDate DESC
-                         LIMIT {1} OFFSET {2}""".format(str(organiteit_id), str(limit), str(offset))
-        sql_count = """SELECT DISTINCT count(c.ID)
-                       FROM carriers c INNER JOIN carriermainartists cm ON cm.CarrierID=c.ID
-                       WHERE cm.IdentityID={0} AND
-                             cm.ContextID=2 AND
-                             ((c.Filter & 2)=2) AND c.Hidden=0""".format(str(organiteit_id))
-        return self._get_count_and_payload(sql_payload, sql_count)
-
-    def get_list_of_carriers_by_organisation_as_label(self, organiteit_id, limit, offset):
-        sql_payload = """SELECT DISTINCT c.ID, c.Title, c.VersionInfo, c.ReleaseDate
+    def get_list_of_carriers_by_organisation(self, organiteit_id, limit, offset):
+        sql_payload = """SELECT DISTINCT c.ID, c.Title, c.VersionInfo, c.ReleaseDate, l.LinkCategory
                          FROM carriers c
                          INNER JOIN dblinking l
                          ON l.LinkType=3 AND
                             l.ObjectID=c.ID AND
                             l.ObjectType=5 AND
-                            l.LinkCategory=46
+                            l.LinkCategory IN (46, 24, 23)
                          WHERE l.LinkID={0} AND
                                ((c.Filter & 2) = 2) AND
                                c.Hidden=0
@@ -130,57 +103,7 @@ class Carriers(MCV):
                        ON l.LinkType=3 AND
                           l.ObjectID=c.ID AND
                           l.ObjectType=5 AND
-                          l.LinkCategory=46
-                       WHERE l.LinkID={0} AND
-                             ((c.Filter & 2) = 2) AND
-                             c.Hidden=0""".format(str(organiteit_id))
-        return self._get_count_and_payload(sql_payload, sql_count)
-
-    def get_list_of_carriers_by_organisation_as_publisher(self, organiteit_id, limit, offset):
-        sql_payload = """SELECT DISTINCT c.ID, c.Title, c.VersionInfo, c.ReleaseDate
-                         FROM carriers c
-                         INNER JOIN dblinking l
-                         ON l.LinkType=3 AND
-                            l.ObjectID=c.ID AND
-                            l.ObjectType=5 AND
-                            l.LinkCategory=24
-                         WHERE l.LinkID={0} AND
-                               ((c.Filter & 2) = 2) AND
-                               c.Hidden=0
-                         ORDER BY ReleaseDate DESC
-                         LIMIT {1} OFFSET {2}""".format(str(organiteit_id), str(limit), str(offset))
-        sql_count = """SELECT DISTINCT count(c.ID)
-                       FROM carriers c
-                       INNER JOIN dblinking l
-                       ON l.LinkType=3 AND
-                          l.ObjectID=c.ID AND
-                          l.ObjectType=5 AND
-                          l.LinkCategory=24
-                       WHERE l.LinkID={0} AND
-                             ((c.Filter & 2) = 2) AND
-                             c.Hidden=0""".format(str(organiteit_id))
-        return self._get_count_and_payload(sql_payload, sql_count)
-
-    def get_list_of_carriers_by_organisation_as_distributor(self, organiteit_id, limit, offset):
-        sql_payload = """SELECT DISTINCT c.ID, c.Title, c.VersionInfo, c.ReleaseDate
-                         FROM carriers c
-                         INNER JOIN dblinking l
-                         ON l.LinkType=3 AND
-                            l.ObjectID=c.ID AND
-                            l.ObjectType=5 AND
-                            l.LinkCategory=23
-                         WHERE l.LinkID={0} AND
-                               ((c.Filter & 2) = 2) AND
-                               c.Hidden=0
-                         ORDER BY ReleaseDate DESC
-                         LIMIT {1} OFFSET {2}""".format(str(organiteit_id), str(limit), str(offset))
-        sql_count = """SELECT DISTINCT c.ID, c.Title, c.VersionInfo, c.ReleaseDate
-                       FROM carriers c
-                       INNER JOIN dblinking l
-                       ON l.LinkType=3 AND
-                          l.ObjectID=c.ID AND
-                          l.ObjectType=5 AND
-                          l.LinkCategory=23
+                          l.LinkCategory IN (46, 24, 23)
                        WHERE l.LinkID={0} AND
                              ((c.Filter & 2) = 2) AND
                              c.Hidden=0""".format(str(organiteit_id))
