@@ -3,46 +3,91 @@ swagger: "2.0"
 info:
   description: "Deze API biedt een geïntegreerd zicht op de praktijkbeschrijvende\
     \ databanken van het Kunstenpunt, die de podiumkunsten, beeldende kunsten en muziek\
-    \ in Vlaanderen en Brussel omvatten.\n\nWe maken het onderscheid Organiteiten\
-    \ versus Activiteiten.\n\nEen Organiteit is een groepsterm voor individuele spelers\
-    \ en organizaties in het kunstenlandschap. Elke organiteit is gelinkt aan één\
-    \ of meerdere organiteitstypes. Organiteitstypes (OrganiteitsType) komen min of\
-    \ meer overeen met de rol die een organiteit kan spelen binnen een bepaalde activiteit,\
-    \ bv. platenfirma of kunstenaar. Bovendien kan een organiteit ook een specifiek\
-    \ functie (Functie) hebben met betrekking tot een activiteit. Bij deze functiebeschrijving\
-    \ blijven we zo dicht mogelijk bij de beschrijving die de Organiteit zelf aanlevert.\n\
-    \nEen Activiteit omvat alle activiteiten van kunstenaars over de verschillende\
-    \ disciplines heen. Kunstenpunt focust op muziek releases (releases) en buitenlandse\
-    \ concerten (buitenlandse_concerten) voor muzikanten, podiumproducties (podium_producties)\
-    \ met hun binnenlandse premières en buitenlandse voorstellingen (podium_voorstellingen)\
-    \ voor podiumkunstenaars, en voor beeldende kunstenaars ligt de focus op binnen-\
-    \ en buitenlandse solo- en groepstentoonstellingen (solotentoonstellingen, groepstentoonstellingen),\
-    \ kunst in opdracht (kunst_in_opdracht) en residenties (residenties). Voor beeldende\
-    \ kunstenaars houden we ook eventueel hun opleidingstrajecten bij (opleidingen).\n\
-    \nTot slot zijn er nog eindpunten voorzien voor Genres en Locaties. In locaties\
-    \ worden hier enkel fysieke locaties gevat, en geen 'ruimtes'. Een ruimte is een\
-    \ organisationele structuur, bv. een theater, en valt daardoor onder een organiteit.\
-    \ De fysieke locatie, bv. een stad, wordt wel bijgehouden in Locaties.\n\nTechnisch\
-    \ gesproken wordt in alle requests die een array teruggeven de totale lengte aangegeven\
-    \ in een x-total-count header."
-  version: "0"
+    \ in Vlaanderen en Brussel omvatten."
+  version: "1.0"
   title: "Kunstenpunt API"
 host: "localhost:8080"
-basePath: "/v0"
+basePath: "/v1"
 schemes:
 - "http"
 produces:
 - "application/json"
 paths:
+  /binnenkort:
+    get:
+      tags:
+      - "Beeldende kunsten"
+      summary: "Een lijst van activiteiten met begindatum in de nabije toekomst"
+      description: "Activiteiten die een begindatum hebben binnen de 7 dagen"
+      operationId: "controllers.Beeldende kunsten_controller.binnenkort_get"
+      parameters: []
+      responses:
+        200:
+          description: "De activiteiten met nabije begindatum"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/KorteLijstActiviteitenItem"
+        default:
+          description: "Onverwachte fout"
+          schema:
+            $ref: "#/definitions/Fout"
+      x-tags:
+      - hasMore: "true"
+        tag: "Beeldende kunsten"
+      - hasMore: "true"
+        tag: "Muziek"
+      - tag: "Podium"
+  /binnenkort/{type_activiteit}:
+    get:
+      tags:
+      - "Beeldende kunsten"
+      summary: "Een lijst van activiteiten van een bepaald type met begindatum in\
+        \ de nabije toekomst"
+      description: "Activiteiten die een begindatum hebben binnen de 7 dagen"
+      operationId: "controllers.Beeldende kunsten_controller.binnenkort_type_activiteit_get"
+      parameters:
+      - name: "type_activiteit"
+        in: "path"
+        description: "Het type van activiteit"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "De activiteiten van een bepaald type met nabije begindatum"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/KorteLijstActiviteitenItem"
+        default:
+          description: "Onverwachte fout"
+          schema:
+            $ref: "#/definitions/Fout"
+      x-tags:
+      - hasMore: "true"
+        tag: "Beeldende kunsten"
+      - hasMore: "true"
+        tag: "Muziek"
+      - tag: "Podium"
   /buitenlandse_concerten:
     get:
       tags:
       - "Muziek"
       summary: "Een lijst van buitenlands concerten."
       description: "Alle gegevens nodig om een lijst te maken met een overzicht van\
-        \ buitenlands concerten. Mogelijke inperking per organiteit."
-      operationId: "controllers.default_controller.buitenlandse_concerten_get"
+        \ buitenlands concerten."
+      operationId: "controllers.Muziek_controller.buitenlandse_concerten_get"
       parameters:
+      - name: "jaar"
+        in: "query"
+        description: "Het jaar waarin het buitenlands concert plaatsvindt"
+        required: false
+        type: "integer"
+      - name: "land_id"
+        in: "query"
+        description: "De ID van het land waarin het buitenlands concert plaatsvindt"
+        required: false
+        type: "integer"
       - name: "organiteit_id"
         in: "query"
         description: "Een id van een organiteit om de buitenlandse concerten van te\
@@ -78,7 +123,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/PunctueleActiviteit"
+              $ref: "#/definitions/BuitenlandseConcertenItem"
           headers:
             x_total_count:
               type: "integer"
@@ -89,276 +134,72 @@ paths:
             $ref: "#/definitions/Fout"
       x-tags:
       - tag: "Muziek"
-  /functies:
+  /buitenlandse_concerten/{activiteit_id}:
     get:
       tags:
-      - "Functie"
-      summary: "Functies die een organiteit kan uitvoeren bij een activiteit"
-      description: "Organiteiten voeren functies uit bij een activiteit, en dit pad\
-        \ geeft een overzicht van die functies. Mogelijk kan de lijst ingeperkt worden\
-        \ naar alle functies die een specifieke organiteit ooit heeft uitgevoerd."
-      operationId: "controllers.default_controller.functies_get"
-      parameters:
-      - name: "organiteit_id"
-        in: "query"
-        description: "De ID van een organiteit om de lijst in te perken."
-        required: false
-        type: "integer"
-      - name: "offset"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      - name: "limit"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      responses:
-        200:
-          description: "Functies van organiteiten."
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/IdMetNaamEnRelatie"
-          headers:
-            x_total_count:
-              type: "integer"
-              description: "Totaal aantal gevonden functies"
-        default:
-          description: "Onverwachte fout"
-          schema:
-            $ref: "#/definitions/Fout"
-      x-tags:
-      - tag: "Functie"
-  /genres:
-    get:
-      tags:
-      - "Genre"
-      summary: "Een overzicht van de beschikbare genres, dat mogelijk ingeperkt kan\
-        \ worden door te filteren op een bepaalde activiteit of een bepaald type van\
-        \ organiteit."
-      description: "Genres"
-      operationId: "controllers.default_controller.genres_get"
+      - "Muziek"
+      summary: "De gegevens van een buitenlands concert"
+      description: "Een buitenlands concert krijgt een eigen pad zodat de gegevens\
+        \ makkelijk opgehaald kunnen worden."
+      operationId: "controllers.Muziek_controller.buitenlandse_concerten_activiteit_id_get"
       parameters:
       - name: "activiteit_id"
-        in: "query"
-        description: "De ID van een specifieke activiteit, bv. een release."
-        required: false
-        type: "integer"
-      - name: "organiteit_type_id"
-        in: "query"
-        description: "De ID van een specifiek type van organiteit, bv. een theatergezelschap."
-        required: false
-        type: "integer"
-      - name: "offset"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      - name: "limit"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      responses:
-        200:
-          description: "Een lijst van IDs van genres, mogelijk ingeperkt naar een\
-            \ bepaalde activiteit of organiteit"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/IdMetNaamEnRelatie"
-          headers:
-            x_total_count:
-              type: "integer"
-              description: "Totaal aantal gevonden genres"
-        default:
-          description: "Onverwachte fout"
-          schema:
-            $ref: "#/definitions/Fout"
-      x-tags:
-      - tag: "Genre"
-  /groepstentoonstellingen:
-    get:
-      tags:
-      - "Beeldende kunsten"
-      summary: "Een lijst van groepstentoonstellingen."
-      description: "Alle gegevens nodig om een lijst te maken van groepstentoonstellingen,\
-        \ eventueel voor een specifieke organiteit."
-      operationId: "controllers.default_controller.groepstentoonstellingen_get"
-      parameters:
-      - name: "organiteit_id"
-        in: "query"
-        description: "Een id van een organiteit om de lijst van groepstentoonstellingen\
-          \ te vinden."
-        required: false
-        type: "integer"
-      responses:
-        200:
-          description: "Een overzichtslijst van groepstentoonstellingen."
-          schema:
-            type: "string"
-            description: "Pure HTML om te tonen"
-        default:
-          description: "Onverwachte fout"
-          schema:
-            $ref: "#/definitions/Fout"
-      x-tags:
-      - tag: "Beeldende kunsten"
-  /kunst_in_opdracht:
-    get:
-      tags:
-      - "Beeldende kunsten"
-      summary: "Een lijst van opdrachten voor kunst."
-      description: "Alle gegevens nodig om een lijst te maken van kunst in opdracht,\
-        \ eventueel voor een specifieke organiteit."
-      operationId: "controllers.default_controller.kunst_in_opdracht_get"
-      parameters:
-      - name: "organiteit_id"
-        in: "query"
-        description: "Een id van een organiteit om de kunst in opdracht te vinden."
-        required: false
-        type: "integer"
-      - name: "from_date"
-        in: "query"
-        description: "De vroegste datum waarop de kunstopdracht mag getoond worden."
-        required: false
-        type: "string"
-        format: "date"
-      - name: "until_date"
-        in: "query"
-        description: "De laatste datum waarop de kunstopdracht mag getoond worden."
-        required: false
-        type: "string"
-        format: "date"
-      - name: "offset"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      - name: "limit"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      responses:
-        200:
-          description: "Een overzichtslijst van kunst in opdracht."
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/PeriodeActiviteit"
-          headers:
-            x_total_count:
-              type: "integer"
-              description: "Totaal aantal gevonden kunstopdrachten"
-        default:
-          description: "Onverwachte fout"
-          schema:
-            $ref: "#/definitions/Fout"
-      x-tags:
-      - tag: "Beeldende kunsten"
-  /locaties:
-    get:
-      tags:
-      - "Locatie"
-      summary: "Een overzicht van de beschikbare locaties (steden), mogelijk ingeperkt\
-        \ voor een specifieke activiteit of een specifieke organiteit."
-      description: "Locaties zijn hier gezien als fysieke locaties (op niveau van\
-        \ een stad), en niet de huizen of galleries. Die laatste worden aanzien als\
-        \ organiteiten. Uiteraard kan een organiteit wel verbonden zijn met (fysieke)\
-        \ locatie."
-      operationId: "controllers.default_controller.locaties_get"
-      parameters:
-      - name: "activiteit_id"
-        in: "query"
-        description: "De ID van een specifieke activiteit."
-        required: false
-        type: "integer"
-      - name: "organiteit_id"
-        in: "query"
-        description: "De ID van een specifieke organiteit."
-        required: false
-        type: "integer"
-      - name: "offset"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      - name: "limit"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      responses:
-        200:
-          description: "Een lijst van IDs van locaties (steden), mogelijk ingeperkt\
-            \ naar een specifieke activiteit of organiteit"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/IdMetNaamEnRelatie"
-          headers:
-            x_total_count:
-              type: "integer"
-              description: "Totaal aantal gevonden locaties"
-        default:
-          description: "Onverwachte fout"
-          schema:
-            $ref: "#/definitions/Fout"
-      x-tags:
-      - tag: "Locatie"
-  /locaties/{locatie_id}:
-    get:
-      tags:
-      - "Locatie"
-      summary: "Een specifiek zicht op een locatie"
-      description: "bla"
-      operationId: "controllers.default_controller.locaties_locatie_id_get"
-      parameters:
-      - name: "locatie_id"
         in: "path"
-        description: "bla"
+        description: "De id van een specifiek buitenlands concert waarvoor de gegevens\
+          \ moeten opgevraagd worden"
         required: true
         type: "integer"
       responses:
         200:
-          description: "Een specifiek zicht op een locatie."
+          description: "De gegevens van een specifiek buitenlands concert."
           schema:
-            $ref: "#/definitions/Locatie"
+            $ref: "#/definitions/BuitenlandsConcert"
         default:
           description: "Onverwachte fout"
           schema:
             $ref: "#/definitions/Fout"
       x-tags:
-      - tag: "Locatie"
-  /opleidingen:
+      - tag: "Muziek"
+  /muziekreleases:
     get:
       tags:
-      - "Beeldende kunsten"
-      summary: "Een lijst van opleidingen."
-      description: "Alle gegevens nodig om een lijst te maken van opleidingen, eventueel\
-        \ voor een specifieke organiteit."
-      operationId: "controllers.default_controller.opleidingen_get"
+      - "Muziek"
+      summary: "Toont een overzicht van releases, mogelijk gefilterd naar release\
+        \ datum of van een specifieke organiteit"
+      description: "Releases zijn een specifieke vorm van een Activiteit, met name\
+        \ binnen de discipline van de Muziek. De lijst van releases kan ingeperkt\
+        \ worden door een datum range op te geven, en/of door een specifieke organiteit\
+        \ aan te geven."
+      operationId: "controllers.Muziek_controller.muziekreleases_get"
       parameters:
-      - name: "organiteit_id"
-        in: "query"
-        description: "Een id van een organiteit om de opleidingen te vinden."
-        required: false
-        type: "integer"
       - name: "from_date"
         in: "query"
-        description: "De vroegste datum waarop de opleiding mag plaatsvinden."
+        description: "De vroegste datum waarop het album gereleased mag zijn."
         required: false
         type: "string"
         format: "date"
       - name: "until_date"
         in: "query"
-        description: "De laatste datum waarop de opleiding mag plaatsvinden."
+        description: "De laatste datum waarop het album gereleased mag zijn."
         required: false
         type: "string"
         format: "date"
+      - name: "jaar"
+        in: "query"
+        description: "Het jaar waarin de release verschenen is"
+        required: false
+        type: "integer"
+      - name: "organiteit_id"
+        in: "query"
+        description: "De organiteit waarmee het album gerelateerd mag zijn. Deze query\
+          \ levert ook terug wat het type van relatie is tussen de release en de organiteit."
+        required: false
+        type: "integer"
+      - name: "genre_id"
+        in: "query"
+        description: "Het genre waaronder de release getagged staat"
+        required: false
+        type: "integer"
       - name: "offset"
         in: "query"
         description: "Voor paginatie"
@@ -371,34 +212,62 @@ paths:
         type: "integer"
       responses:
         200:
-          description: "Een overzichtslijst van opleidingen."
+          description: "Een lijst van releases met hun release datum."
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/PeriodeActiviteit"
+              $ref: "#/definitions/MuziekreleasesItem"
           headers:
             x_total_count:
               type: "integer"
-              description: "Totaal aantal gevonden opleidingen"
+              description: "Totaal aantal gevonden releases"
         default:
           description: "Onverwachte fout"
           schema:
             $ref: "#/definitions/Fout"
       x-tags:
-      - tag: "Beeldende kunsten"
+      - tag: "Muziek"
+  /muziekreleases/{activiteit_id}:
+    get:
+      tags:
+      - "Muziek"
+      summary: "Geeft een detailzicht op een specifieke release."
+      description: "Door de unieke id van een release mee te geven wordt een detailzicht\
+        \ van de release getoond. Gerelateerde informatie zoals de verbonden organiteiten\
+        \ (groep, muzikanten, platenfirma) kunnen opgezocht worden met /organiteiten/?activiteit_id=:activiteit_id.\
+        \ Voor de gerelateerde genres kan je zoeken met /genres/?activiteit_id=:activiteit_id."
+      operationId: "controllers.Muziek_controller.controllers_default_controller_releases_activiteit_id_get"
+      parameters:
+      - name: "activiteit_id"
+        in: "path"
+        description: "De unieke identificator voor een release."
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "Een specifiek zicht op een release."
+          schema:
+            $ref: "#/definitions/Muziekrelease"
+        default:
+          description: "Onverwachte fout"
+          schema:
+            $ref: "#/definitions/Fout"
+      x-tags:
+      - tag: "Muziek"
   /organiteiten:
     get:
       tags:
       - "Organiteit"
       summary: "Toont organiteiten binnen het kunstenlandschap."
       description: "Met deze API call kan een lijst van organiteit ids opgeroepen\
-        \ worden. De lijst kan ingeperkt worden naar type van organiteit, naar organiteiten\
-        \ die met een specifieke activiteit verbonden zijn, naar een specifiek genre,\
-        \ of naar een (fysieke) locatie. Het is ook mogelijk om andere organiteiten\
-        \ te vinden die gelinkt zijn aan een specifieke organiteit, bv. organiteit\
-        \ A 'is lid van' organiteit B."
-      operationId: "controllers.default_controller.organiteiten_get"
+        \ worden."
+      operationId: "controllers.Organiteit_controller.organiteiten_get"
       parameters:
+      - name: "organiteit_naam_begin_met"
+        in: "query"
+        description: "De beginletter van een organiteitnaam"
+        required: false
+        type: "string"
       - name: "organiteit_type_id"
         in: "query"
         description: "De unieke id van een organiteitstype."
@@ -424,8 +293,8 @@ paths:
       - name: "organiteit_id"
         in: "query"
         description: "Om organiteiten gelinkt aan andere organiteiten te vinden. Deze\
-          \ query levert (doorgaans) ook terug wat de relatie is tussen de gevonden\
-          \ organiteiten en de gevraagde organiteit."
+          \ query levert ook terug wat de relatie is tussen de gevonden organiteiten\
+          \ en de gevraagde organiteit."
         required: false
         type: "integer"
       - name: "offset"
@@ -440,13 +309,13 @@ paths:
         type: "integer"
       responses:
         200:
-          description: "Een lijst van organiteit IDs met hun toonnaam en eventueel\
-            \ een typering van de relatie tot de query parameter, bv. organiteit A\
-            \ 'is lid van' organiteit B."
+          description: "Een lijst van organiteit IDs met hun toonnaam en andere informatie,\
+            \ en eventueel een typering van de relatie tot de query parameter, bv.\
+            \ organiteit A 'is lid van' organiteit B."
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/IdMetNaamEnRelatie"
+              $ref: "#/definitions/OrganiteitenItem"
           headers:
             x_total_count:
               type: "integer"
@@ -463,10 +332,8 @@ paths:
       - "Organiteit"
       summary: "Toont de beschikbare gegevens voor een specifieke organiteit."
       description: "Met deze API call wordt een 'fichebak' kaart van een specifieke\
-        \ organiteit opgeroepen. Verdere gelinkte informatie van de organiteit kan\
-        \ opgeroepen worden via de API calls voor organiteitstype en activiteiten\
-        \ die gelinkt zijn aan een organiteit."
-      operationId: "controllers.default_controller.organiteiten_organiteit_id_get"
+        \ organiteit opgeroepen. Dit bevat dan ook de gelinkt activiteiten."
+      operationId: "controllers.Organiteit_controller.organiteiten_organiteit_id_get"
       parameters:
       - name: "organiteit_id"
         in: "path"
@@ -485,60 +352,13 @@ paths:
             $ref: "#/definitions/Fout"
       x-tags:
       - tag: "Organiteit"
-  /organiteittypes:
-    get:
-      tags:
-      - "Organiteit"
-      summary: "Toont organiteitstypes die het Kunstenpunt hanteert, mogelijk gefilterd\
-        \ voor een specifieke organiteit."
-      description: "Organiteiten in het kunstenpunt worden ingedeeld volgens een bepaalde\
-        \ typering, die overeenkomt met de functie of rol die een organiteit heeft\
-        \ binnen een bepaalde activiteit. Als gevolg hiervan kan een organiteit meerdere\
-        \ organiteitstypes hebben, afhankelijk van de functies die ze heeft opgenomen\
-        \ in haar verschillende activiteiten. Mogelijke organiteittypes zijn bijvoorbeeld\
-        \ platenfirma, gezelschap, locatie (ruimte), ..."
-      operationId: "controllers.default_controller.organiteittypes_get"
-      parameters:
-      - name: "organiteit_id"
-        in: "query"
-        description: "De unieke identificator van een bepaalde organiteit."
-        required: false
-        type: "integer"
-      - name: "offset"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      - name: "limit"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      responses:
-        200:
-          description: "De organiteitstypes, eventueel ingeperkt tot de types van\
-            \ een specifieke organiteit."
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/IdMetNaamEnRelatie"
-          headers:
-            x_total_count:
-              type: "integer"
-              description: "Totaal aantal organiteittypes in de databank"
-        default:
-          description: "Onverwachte fout"
-          schema:
-            $ref: "#/definitions/Fout"
-      x-tags:
-      - tag: "Organiteit"
   /podium_producties/{podium_productie_id}:
     get:
       tags:
       - "Podium"
       summary: "Een specifiek zicht op een podium productie."
       description: "Alle gegevens nodig om een specifieke podium productie te tonen."
-      operationId: "controllers.default_controller.podium_producties_podium_productie_id_get"
+      operationId: "controllers.Podium_controller.podium_producties_podium_productie_id_get"
       parameters:
       - name: "podium_productie_id"
         in: "path"
@@ -563,8 +383,18 @@ paths:
       summary: "Een lijst van podium producties"
       description: "Alle gegevens nodig om een lijst te maken van podium producties,\
         \ eventueel voor een specifieke organiteit."
-      operationId: "controllers.default_controller.podiumproducties_get"
+      operationId: "controllers.Podium_controller.controllers_default_controller_podiumproducties_get"
       parameters:
+      - name: "seizoen_id"
+        in: "query"
+        description: "Een id van een seizoen"
+        required: false
+        type: "integer"
+      - name: "activiteit_naam_begint_met"
+        in: "query"
+        description: "Eerste letter waarmee de podiumproductietitel moet beginnen"
+        required: false
+        type: "string"
       - name: "organiteit_id"
         in: "query"
         description: "Een id van een organiteit om de podium producties te vinden."
@@ -604,7 +434,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/PeriodeActiviteit"
+              $ref: "#/definitions/PodiumProductiesItem"
           headers:
             x_total_count:
               type: "integer"
@@ -622,8 +452,13 @@ paths:
       summary: "Een lijst van podium voorstellingen"
       description: "Alle gegevens nodig om een lijst te maken van podium voorstellingen,\
         \ eventueel voor een specifieke podium productie of een organiteit."
-      operationId: "controllers.default_controller.podiumvoorstellingen_get"
+      operationId: "controllers.Podium_controller.controllers_default_controller_podiumvoorstellingen_get"
       parameters:
+      - name: "jaar"
+        in: "query"
+        description: "Het jaar waarin de voorstelling plaatsvond"
+        required: false
+        type: "integer"
       - name: "podiumproductie_id"
         in: "query"
         description: "een ID van een podiumproductie"
@@ -663,7 +498,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/PunctueleActiviteit"
+              $ref: "#/definitions/PodiumVoorstellingenItem"
           headers:
             x_total_count:
               type: "integer"
@@ -674,190 +509,143 @@ paths:
             $ref: "#/definitions/Fout"
       x-tags:
       - tag: "Podium"
-  /releases:
+  /podiumvoorstellingen/{activiteit_id}:
     get:
       tags:
-      - "Muziek"
-      summary: "Toont een overzicht van releases, mogelijk gefilterd naar release\
-        \ datum of van een specifieke organiteit"
-      description: "Releases zijn een specifieke vorm van een Activiteit, met name\
-        \ binnen de discipline van de Muziek. De lijst van releases kan ingeperkt\
-        \ worden door een datum range op te geven, en/of door een specifieke organiteit\
-        \ aan te geven."
-      operationId: "controllers.default_controller.releases_get"
-      parameters:
-      - name: "from_date"
-        in: "query"
-        description: "De vroegste datum waarop het album gereleased mag zijn."
-        required: false
-        type: "string"
-        format: "date"
-      - name: "until_date"
-        in: "query"
-        description: "De laatste datum waarop het album gereleased mag zijn."
-        required: false
-        type: "string"
-        format: "date"
-      - name: "organiteit_id"
-        in: "query"
-        description: "De organiteit waarmee het album gerelateerd mag zijn. Deze query\
-          \ levert ook terug wat het type van relatie is tussen de release en de organiteit."
-        required: false
-        type: "integer"
-      - name: "offset"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      - name: "limit"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      responses:
-        200:
-          description: "Een lijst van releases met hun release datum."
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/PunctueleActiviteit"
-          headers:
-            x_total_count:
-              type: "integer"
-              description: "Totaal aantal gevonden releases"
-        default:
-          description: "Onverwachte fout"
-          schema:
-            $ref: "#/definitions/Fout"
-      x-tags:
-      - tag: "Muziek"
-  /releases/{activiteit_id}:
-    get:
-      tags:
-      - "Muziek"
-      summary: "Geeft een detailzicht op een specifieke release."
-      description: "Door de unieke id van een release mee te geven wordt een detailzicht\
-        \ van de release getoond. Gerelateerde informatie zoals de verbonden organiteiten\
-        \ (groep, muzikanten, platenfirma) kunnen opgezocht worden met /organiteiten/?activiteit_id=:activiteit_id.\
-        \ Voor de gerelateerde genres kan je zoeken met /genres/?activiteit_id=:activiteit_id."
-      operationId: "controllers.default_controller.releases_activiteit_id_get"
+      - "Podium"
+      summary: "De gegevens van een podiumvoorstelling"
+      description: "Een podiumvoorstelling krijgt een eigen pad zodat de gegevens\
+        \ makkelijk opgehaald kunnen worden."
+      operationId: "controllers.Podium_controller.podiumvoorstellingen_activiteit_id_get"
       parameters:
       - name: "activiteit_id"
         in: "path"
-        description: "De unieke identificator voor een release."
+        description: "De id van een specifieke podiumvoorstelling waarvoor de gegevens\
+          \ moeten opgevraagd worden"
         required: true
         type: "integer"
       responses:
         200:
-          description: "Een specifiek zicht op een release."
+          description: "De gegevens van een specifieke podiumvoorstelling."
           schema:
-            $ref: "#/definitions/Release"
+            $ref: "#/definitions/PodiumVoorstelling"
         default:
           description: "Onverwachte fout"
           schema:
             $ref: "#/definitions/Fout"
       x-tags:
-      - tag: "Muziek"
-  /residenties:
+      - tag: "Podium"
+  /recent_gewijzigde_activiteiten:
     get:
       tags:
       - "Beeldende kunsten"
-      summary: "Een lijst van residenties."
-      description: "Alle gegevens nodig om een lijst te maken van residenties, eventueel\
-        \ voor een specifieke organiteit."
-      operationId: "controllers.default_controller.residenties_get"
-      parameters:
-      - name: "organiteit_id"
-        in: "query"
-        description: "Een id van een organiteit om de residenties te vinden."
-        required: false
-        type: "integer"
-      - name: "from_date"
-        in: "query"
-        description: "De vroegste datum waarop de residentie mag plaatsvinden."
-        required: false
-        type: "string"
-        format: "date"
-      - name: "until_date"
-        in: "query"
-        description: "De laatste datum waarop de residentie mag plaatsvinden."
-        required: false
-        type: "string"
-        format: "date"
-      - name: "offset"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      - name: "limit"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
+      summary: "Een lijst van recent gewijzigde tentoonstellingen, releases, of andere\
+        \ activiteiten"
+      description: "Recent gewijzigde activiteiten in dit lijstje"
+      operationId: "controllers.Beeldende kunsten_controller.recent_gewijzigde_activiteiten_get"
+      parameters: []
       responses:
         200:
-          description: "Een overzichtslijst van residenties."
+          description: "De lijst van recent gewijzigde activiteiten"
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/PeriodeActiviteit"
-          headers:
-            x_total_count:
-              type: "integer"
-              description: "Totaal aantal gevonden residenties"
+              $ref: "#/definitions/KorteLijstActiviteitenItem"
+        default:
+          description: "Onverwachte fout"
+          schema:
+            $ref: "#/definitions/Fout"
+      x-tags:
+      - hasMore: "true"
+        tag: "Beeldende kunsten"
+      - hasMore: "true"
+        tag: "Muziek"
+      - tag: "Podium"
+  /recent_gewijzigde_activiteiten/{type_activiteit}:
+    get:
+      tags:
+      - "Beeldende kunsten"
+      summary: "Een lijst van recent gewijzigde tentoonstellingen, releases, of andere\
+        \ activiteiten"
+      description: "Recent gewijzigde activiteiten van een bepaald type komen in dit\
+        \ lijstje"
+      operationId: "controllers.Beeldende kunsten_controller.recent_gewijzigde_activiteiten_type_activiteit_get"
+      parameters:
+      - name: "type_activiteit"
+        in: "path"
+        description: "het type van activiteit"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "De lijst van recent gewijzigde activiteiten van een bepaald\
+            \ type"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/KorteLijstActiviteitenItem"
+        default:
+          description: "Onverwachte fout"
+          schema:
+            $ref: "#/definitions/Fout"
+      x-tags:
+      - hasMore: "true"
+        tag: "Beeldende kunsten"
+      - hasMore: "true"
+        tag: "Muziek"
+      - tag: "Podium"
+  /tentoonstellingen:
+    get:
+      tags:
+      - "Beeldende kunsten"
+      summary: "Een lijst van solo- en groepstentoonstellingen."
+      description: "Alle gegevens nodig om een lijst te maken van solo- en groepstentoonstellingen."
+      operationId: "controllers.Beeldende kunsten_controller.tentoonstellingen_get"
+      parameters:
+      - name: "jaar"
+        in: "query"
+        description: "Het jaar waarin een tentoonstelling plaatsvindt"
+        required: false
+        type: "integer"
+      - name: "organiteit_id"
+        in: "query"
+        description: "Een id van een organiteit om de lijst van solo- en groepstentoonstellingen\
+          \ te vinden."
+        required: false
+        type: "integer"
+      responses:
+        200:
+          description: "Een overzichtslijst van tentoonstellingen."
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Tentoonstelling"
         default:
           description: "Onverwachte fout"
           schema:
             $ref: "#/definitions/Fout"
       x-tags:
       - tag: "Beeldende kunsten"
-  /solotentoonstellingen:
+  /tentoonstellingen/{activiteit_id}:
     get:
       tags:
       - "Beeldende kunsten"
-      summary: "Een lijst van solo tentoonstellingen."
-      description: "Alle gegevens nodig om een lijst te maken van solotentoonstellingen,\
-        \ eventueel voor een specifieke organiteit."
-      operationId: "controllers.default_controller.solotentoonstellingen_get"
+      summary: "De gegevens van een tentoonstelling"
+      description: "Een tentoonstelling krijgt een eigen pad zodat de gegevens makkelijk\
+        \ opgehaald kunnen worden."
+      operationId: "controllers.Beeldende kunsten_controller.tentoonstellingen_activiteit_id_get"
       parameters:
-      - name: "organiteit_id"
-        in: "query"
-        description: "Een id van een organiteit om de solotentoonstelling te vinden."
-        required: false
-        type: "integer"
-      - name: "from_date"
-        in: "query"
-        description: "De vroegste datum waarop het de solotentoonstelling mag plaatsvinden."
-        required: false
-        type: "string"
-        format: "date"
-      - name: "until_date"
-        in: "query"
-        description: "De laatste datum waarop de solotentoonstelling mag plaatsvinden."
-        required: false
-        type: "string"
-        format: "date"
-      - name: "offset"
-        in: "query"
-        description: "Voor paginatie"
-        required: true
-        type: "integer"
-      - name: "limit"
-        in: "query"
-        description: "Voor paginatie"
+      - name: "activiteit_id"
+        in: "path"
+        description: "De id van een specifieke tentoonstelling waarvoor de gegevens\
+          \ moeten opgevraagd worden"
         required: true
         type: "integer"
       responses:
         200:
-          description: "Een overzichtslijst van solotentoonstellingen."
+          description: "De gegevens van een specifiek tentoonstelling."
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/PeriodeActiviteit"
-          headers:
-            x_total_count:
-              type: "integer"
-              description: "Totaal aantal gevonden solotentoonstellingen"
+            $ref: "#/definitions/Tentoonstelling"
         default:
           description: "Onverwachte fout"
           schema:
@@ -865,6 +653,30 @@ paths:
       x-tags:
       - tag: "Beeldende kunsten"
 definitions:
+  OrganiteitenItem:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "Een unieke identificator die gebruikt kan worden om een link\
+          \ te construeren, bv. /organiteiten/{organiteit_id}"
+      toonname:
+        type: "string"
+        description: "Een toonbare naam voor de organiteit"
+      beeld:
+        type: "string"
+        description: "url naar een optionele beeldfile die gebruikt kan worden als\
+          \ klein fotootje in een lijst"
+      organiteit_type:
+        type: "array"
+        description: "Lijst van de organiteitstypes die aan een organiteit hangen"
+        items:
+          type: "string"
+          description: "Organiteitstype"
+      relatie_type:
+        type: "string"
+        description: "Als er een relatie gevraagd is, wordt hier ook het relatietype\
+          \ aangegeven, bv. organiteit A 'is lid van' organiteit B."
   Organiteit:
     type: "object"
     properties:
@@ -889,9 +701,10 @@ definitions:
         items:
           type: "string"
           description: "Korte beschrijving in het Engels."
-      geslacht:
-        type: "string"
-        description: "Geslacht van organiteit."
+      gelinkte_organiteiten:
+        type: "array"
+        items:
+          $ref: "#/definitions/OrganiteitenItem"
       startdatum:
         type: "string"
         format: "date"
@@ -925,95 +738,187 @@ definitions:
         items:
           type: "string"
           description: "Telefoonnummer van organiteit"
-  IdMetNaamEnRelatie:
+      activiteiten:
+        $ref: "#/definitions/Organiteit_activiteiten"
+  TentoonstellingenItem:
     type: "object"
     properties:
       id:
         type: "integer"
-        description: "Een unieke identificator."
-      toonname:
+        description: "Een unieke identificator"
+      kunstenaar:
         type: "string"
-        description: "Een toonbare naam."
-      relatie_type:
+        description: "De gelinkte kunstenaar"
+      titel:
         type: "string"
-        description: "Als er een relatie gevraagd is, wordt hier ook het relatietype\
-          \ aangegeven, bv. organiteit A 'is lid van' organiteit B."
-  PunctueleActiviteit:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        description: "Unieke identifier van een activiteit."
-      toonnaam:
-        type: "string"
-        description: "Toonbare tekst voor een activiteit, bv. de titel."
+        description: "Een toonbare naam"
       ruimtes:
         type: "array"
         description: "De ruimtes waar de activiteit plaatsgevonden heeft"
         items:
-          $ref: "#/definitions/PunctueleActiviteit_ruimtes"
+          type: "string"
+          description: "De ruimte (organisatie, venue, ...) waar dit plaatsvond"
+      locatie:
+        type: "string"
+        description: "De (fysieke) locaties waar de activiteit plaatsgevonden heeft."
+      datum:
+        type: "string"
+        format: "date"
+        description: "Datum waarop activiteit plaatsvindt, eventueel een range."
+      gps:
+        $ref: "#/definitions/TentoonstellingenItem_gps"
+    description: "Een tentoonstellingsfiche"
+  Tentoonstelling:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "Een unieke identificator"
+      kunstenaar:
+        type: "string"
+        description: "De gelinkte kunstenaar"
+      titel:
+        type: "string"
+        description: "Een toonbare naam"
+      ruimtes:
+        type: "array"
+        description: "De ruimtes waar de activiteit plaatsgevonden heeft"
+        items:
+          type: "string"
+          description: "De ruimte (organisatie, venue, ...) waar dit plaatsvond"
       locaties:
         type: "array"
         description: "De (fysieke) locaties waar de activiteit plaatsgevonden heeft."
         items:
-          $ref: "#/definitions/PunctueleActiviteit_locaties"
+          type: "string"
+          description: "De locatie (stad, dorp, ...) waar de activiteit plaatsvond"
       datum:
         type: "string"
         format: "date"
-        description: "Datum waarop activiteit plaatsvindt."
-    description: "Activiteiten die geen lange duur hebben, i.e. podium voorstellingen,\
-      \ releases en buitenlandse concerten"
-  PeriodeActiviteit:
+        description: "Datum waarop activiteit plaatsvindt, eventueel een range."
+    description: "Een tentoonstellingsfiche"
+  KorteLijstActiviteitenItem:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "unieke identiefier van een activiteit"
+      toonnaam:
+        type: "string"
+        description: "een toonnaam voor de activiteit, moet worden gespecifieerd per\
+          \ type van activiteit"
+      activiteit_type:
+        type: "string"
+        description: "Het type van activiteit, bv. muziekrelease, tentoonstelling"
+    description: "korte beschrijving van een activiteit"
+  PodiumProductiesItem:
     type: "object"
     properties:
       id:
         type: "integer"
         description: "Unieke identifier van een productie."
-      toonnaam:
+      titel:
         type: "string"
-        description: "Toonbare tekst voor een productie, bv. de titel."
-      ruimtes:
-        type: "array"
-        description: "De ruimtes waar de activiteit plaatsgevonden heeft"
-        items:
-          $ref: "#/definitions/PunctueleActiviteit_ruimtes"
-      locaties:
-        type: "array"
-        description: "De (fysieke) locaties waar de activiteit plaatsgevonden heeft."
-        items:
-          $ref: "#/definitions/PunctueleActiviteit_locaties"
-      periode_begin:
+        description: "Toonbare tekst voor een productie namelijk de titel."
+      seizoen:
         type: "string"
-        format: "date"
-        description: "Begindatum van eriode waarin activiteit plaatsvindt."
-      periode_einde:
-        type: "string"
-        format: "date"
-        description: "Einddatum van periode waarin activiteit plaatsvindt."
-    description: "Activiteiten die een bepaalde duur hebben, i.e. podium productie,\
-      \ activiteiten in beeldende kunsten (solo/groepstentoonstellingen, kunst in\
-      \ publieke ruimte, opleidingen)"
+        description: "String van seizoen waarin de productie plaatsvindt."
+    description: "Een korte beschrijving van een podiumproductie voor in een lijstje."
   PodiumProductie:
     type: "object"
     properties:
       id:
         type: "integer"
-        description: "id van een podium productie"
-      toonnaam:
+        description: "Unieke identifier van een productie."
+      titel:
         type: "string"
-        description: "Toonbare naam van een podium productie"
-      periode_begin:
+        description: "Toonbare tekst voor een productie namelijk de titel."
+      seizoen:
         type: "string"
-        format: "date"
-        description: "Begindatum van eriode waarin activiteit plaatsvindt."
-      periode_einde:
-        type: "string"
-        format: "date"
-        description: "Einddatum van periode waarin activiteit plaatsvindt."
-      herneming_id:
+        description: "String van seizoen waarin de productie plaatsvindt."
+      organiteiten:
+        type: "array"
+        description: "Gelinkte organiteiten"
+        items:
+          $ref: "#/definitions/PodiumProductie_organiteiten"
+      voorstellingen:
+        type: "array"
+        description: "Gelinkte voorstellingen"
+        items:
+          $ref: "#/definitions/PodiumProductie_voorstellingen"
+  PodiumVoorstellingenItem:
+    type: "object"
+    properties:
+      id:
         type: "integer"
-        description: "Id van de productie waarvan dit een herneming is"
-  Release:
+        description: "de ID van een podiumvoorstelling"
+      productie_titel:
+        type: "string"
+        description: "De titel van de gerelateerde podiumproductie"
+      productie_id:
+        type: "integer"
+        description: "De ID van de gerelateerde podiumproductie"
+      ruimtes:
+        type: "array"
+        description: "De ruimtes waar de activiteit plaatsgevonden heeft"
+        items:
+          type: "string"
+          description: "De ruimte (organisatie, venue, ...) waar dit plaatsvond"
+      locaties:
+        type: "array"
+        description: "De (fysieke) locaties waar de activiteit plaatsgevonden heeft."
+        items:
+          type: "string"
+          description: "De locatie (stad, dorp, ...) waar de activiteit plaatsvond"
+      datum:
+        type: "string"
+        format: "date"
+        description: "Datum waarop activiteit plaatsvindt."
+      gps:
+        $ref: "#/definitions/TentoonstellingenItem_gps"
+    description: "Een fiche voor een podiumvoorstelling"
+  PodiumVoorstelling:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "de ID van een podiumvoorstelling"
+      productie_titel:
+        type: "string"
+        description: "De titel van de gerelateerde podiumproductie"
+      productie_id:
+        type: "integer"
+        description: "De ID van de gerelateerde podiumproductie"
+      ruimtes:
+        type: "array"
+        description: "De ruimtes waar de activiteit plaatsgevonden heeft"
+        items:
+          type: "string"
+          description: "De ruimte (organisatie, venue, ...) waar dit plaatsvond"
+      locaties:
+        type: "array"
+        description: "De (fysieke) locaties waar de activiteit plaatsgevonden heeft."
+        items:
+          type: "string"
+          description: "De locatie (stad, dorp, ...) waar de activiteit plaatsvond"
+      datum:
+        type: "string"
+        format: "date"
+        description: "Datum waarop activiteit plaatsvindt."
+    description: "Een fiche voor een podiumvoorstelling"
+  MuziekreleasesItem:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "De Id van een release"
+      titel:
+        type: "string"
+        description: "De titel van de release"
+      artiest:
+        type: "string"
+        description: "De main artist van een release"
+  Muziekrelease:
     type: "object"
     properties:
       id:
@@ -1063,49 +968,6 @@ definitions:
         description: "Engelstalige perstekst"
       tracks:
         $ref: "#/definitions/Release_tracks"
-  Locatie:
-    type: "object"
-    properties:
-      toonnaam:
-        type: "string"
-        description: "Toonnaam voor fysieke locatie (naam van de stad, land)"
-      id:
-        type: "integer"
-        description: "ID voor fysieke locatie (id van stad)"
-  Fout:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      message:
-        type: "string"
-      fields:
-        type: "string"
-  PunctueleActiviteit_ruimtes:
-    properties:
-      ruimte_id:
-        type: "integer"
-        description: "Integer van de gerelateerde organiteit met als functie 'locatie'\
-          \ in het geval van tentoonstellingen, residenties, opleidingen en kunst\
-          \ in opdracht; podiumvoorstellingen, releases en buitenlandse concerten\
-          \ hebben een ruimte veld."
-      ruimte_toonnaam:
-        type: "string"
-        description: "Toonbare naam van de gerelateerde organiteit met als functie\
-          \ 'locatie' in het geval van tentoonstellingen, residenties, opleidingen\
-          \ en kunst in opdracht; podiumvoorstellingen, releases en buitenlandse concerten\
-          \ hebben een ruimte veld."
-  PunctueleActiviteit_locaties:
-    properties:
-      locatie_id:
-        type: "integer"
-        description: "ID van de locatie waar de activiteit plaatsvindt."
-      locatie_toonnaam:
-        type: "string"
-        description: "Toonbare naam van een locatie (stad, land)"
-    description: "Een fysieke locatie heeft een ID en een toonnaam, die bestaat uit\
-      \ de stadnaam en de naam van het land"
   Release_tracks_lijst:
     properties:
       nummer:
@@ -1120,13 +982,7 @@ definitions:
           \ lijst van de main artists track verschilt (niet qua volgorde) van de volledige\
           \ lijst 'main artists' van de release."
         items:
-          type: "object"
-          description: "Een main artist met zijn ID."
-          properties:
-            toonnaam:
-              type: string
-            id:
-              type: integer
+          $ref: "#/definitions/Release_tracks_lijst_hoofdartiesten"
       versie_info:
         type: "string"
         description: "Versie informatie over de track."
@@ -1140,3 +996,119 @@ definitions:
       plat:
         type: "string"
         description: "Platte tekst representatie van tracklijst"
+  BuitenlandseConcertenItem:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "De ID van een buitenlands concert"
+      titel:
+        type: "string"
+        description: "De titel van een buitenlands concert"
+      artiest:
+        type: "string"
+        description: "De main artist die aan het buitenlands concert hangt"
+      datum:
+        type: "string"
+        format: "date"
+        description: "De datum waarop het buitenlands concert plaatsvindt"
+      organisatie:
+        type: "string"
+        description: "Doorgaans de locatie waarop het buitenlands concert plaatsvindt"
+      gps:
+        $ref: "#/definitions/TentoonstellingenItem_gps"
+  BuitenlandsConcert:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "de ID van een buitenlands concert"
+      titel:
+        type: "string"
+        description: "De titel van een buitenlands concert"
+      artiest:
+        type: "string"
+        description: "De main artiest bij een buitenlands concert"
+      artiest_id:
+        type: "integer"
+        description: "De ID van de main artist"
+      organisatie:
+        type: "string"
+        description: "De organisatie bij een buitenlands concert, doorgaans de locatie"
+      datum:
+        type: "string"
+        format: "date"
+        description: "De datum waarop het buitenlands concert plaatsvindt"
+  Fout:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+      fields:
+        type: "string"
+  Organiteit_activiteiten:
+    properties:
+      tentoonstellingen:
+        type: "array"
+        description: "lijst van tentoonstellingen door een organiteit"
+        items:
+          $ref: "#/definitions/TentoonstellingenItem"
+      buitenlandse_concerten:
+        type: "array"
+        description: "lijst van buitenlandse concerten door een organiteit"
+        items:
+          $ref: "#/definitions/BuitenlandseConcertenItem"
+      muziekreleases:
+        type: "array"
+        description: "lijst van muziekreleases door een organiteit"
+        items:
+          $ref: "#/definitions/MuziekreleasesItem"
+      podiumproducties:
+        type: "array"
+        description: "lijst van podiumproducties gelinkt aan een organiteit"
+        items:
+          $ref: "#/definitions/PodiumProductiesItem"
+    description: "Overzicht van de activiteiten van een organiteit"
+  TentoonstellingenItem_gps:
+    properties:
+      latitude:
+        type: "number"
+      longitude:
+        type: "number"
+    description: "GPS coordinaten voor de locatie"
+  PodiumProductie_organiteiten:
+    properties:
+      id:
+        type: "integer"
+        description: "ID van de gelinkt organiteit"
+      naam:
+        type: "string"
+        description: "naam van de gelinkte organiteit"
+      functie:
+        type: "string"
+        description: "functie die de gelinkte organiteit uitoefent bij de productie"
+  PodiumProductie_voorstellingen:
+    properties:
+      id:
+        type: "integer"
+        description: "ID van de gelinkte voorstelling"
+      datum:
+        type: "string"
+        format: "date"
+        description: "Datum waarop de voorstelling plaatsvindt"
+      ruimte:
+        type: "string"
+        description: "Naam van de ruimte waar de voorstelling plaatsvindt"
+      ruimte_id:
+        type: "integer"
+        description: "ID van de ruimte (=organiteit) waar de voorstelling plaatsvindt"
+  Release_tracks_lijst_hoofdartiesten:
+    properties:
+      toonnaam:
+        type: "string"
+      id:
+        type: "integer"
+    description: "Een main artist met zijn ID."
