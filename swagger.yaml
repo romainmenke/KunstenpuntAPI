@@ -967,6 +967,9 @@ definitions:
       seizoen:
         type: "string"
         description: "String van seizoen waarin de productie plaatsvindt."
+      seizoen_beginjaar:
+        type: "integer"
+        description: "Beginjaar van het seizoen"
       
   PodiumProductie:
     type: "object"
@@ -980,6 +983,9 @@ definitions:
       seizoen:
         type: "string"
         description: "String van seizoen waarin de productie plaatsvindt."
+      seizoen_beginjaar:
+        type: "integer"
+        description: "Beginjaar van het seizoen"
       organiteiten:
         type: "array"
         description: "Gelinkte organiteiten"
@@ -1095,6 +1101,21 @@ definitions:
       id:
         type: "integer"
         description: "Unieke identifier van een release."
+      artiesten:
+        type: "array"
+        description: "de lijst van de main artists"
+        items:
+          type: "object"
+          properties:
+            naam:
+              type: "string"
+              description: "De fullnaam van de main artist van een release"
+            id:
+              type: "integer"
+              description: "De ID van de main artist, enkel als die een KSP/FAI kanaal heeft"
+            context:
+              type: "string"
+              description: "De gelinkte context van main artist van een release"
       beeldmateriaal:
         type: "array"
         items:
@@ -1161,6 +1182,7 @@ definitions:
               type: string
             id:
               type: integer
+              description: "De id van de main artist, maar enkel als die een KSP/FAI kanaal heeft"
       versie_info:
         type: "string"
         description: "Versie informatie over de track."
@@ -1196,7 +1218,7 @@ definitions:
         description: "De datum waarop het buitenlands concert plaatsvindt"
       organisatie:
         type: "string"
-        description: "Doorgaans de locatie waarop het buitenlands concert plaatsvindt"
+        description: "Doorgaans de speelplek waarop het buitenlands concert plaatsvindt"
       gps:
         type: object
         description: "GPS coordinaten voor de locatie"
@@ -1223,13 +1245,13 @@ definitions:
           properties:
             artiest_id:
               type: "integer"
-              description: "De ID van de main artist"
+              description: "De ID van de main artist (als deze main artist een KSP/FAI kanaal heeft)"
             artiest_naam:
               type: "string"
               description: "De naam van de main artist"
       organisatie:
         type: "string"
-        description: "De organisatie bij een buitenlands concert, doorgaans de locatie"
+        description: "De organisatie bij een buitenlands concert, doorgaans de speelplek"
       locatie:
         type: "string"
         description: "Land en stad"
