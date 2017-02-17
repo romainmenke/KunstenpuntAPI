@@ -335,15 +335,17 @@ paths:
         type: "integer"
       - name: "organiteit_id"
         in: "query"
-        description: "De organiteit waarmee het album gerelateerd mag zijn. Deze query\
+        description: "De organiteit waarmee het album gerelateerd mag zijn. Deze query \
           \ levert ook terug wat het type van relatie is tussen de release en de organiteit."
         required: false
         type: "integer"
       - name: "genre_id"
         in: "query"
-        description: "Het genre waaronder de release getagged staat"
+        description: "De ids van de genres waarin de releases mogen vallen (OR dus)."
         required: false
-        type: "integer"
+        type: "array"
+        items:
+          type: "integer"
       - name: "offset"
         in: "query"
         description: "Voor paginatie"
@@ -497,6 +499,13 @@ paths:
         description: "Een id van een seizoen"
         required: false
         type: "integer"
+      - name: "genre_id"
+        in: "query"
+        description: "De ids van de genres waarin de podiumproducties mogen vallen (OR dus)."
+        required: false
+        type: "array"
+        items:
+          type: "integer"
       - name: "activiteit_naam_begint_met"
         in: "query"
         description: "Eerste letter waarmee de podiumproductietitel moet beginnen"
@@ -582,11 +591,45 @@ paths:
         \ eventueel voor een specifieke podium productie of een organiteit."
       operationId: "controllers.default_controller.podiumvoorstellingen_get"
       parameters:
-      - name: "jaar"
+      - name: "seizoen_id"
         in: "query"
-        description: "Het jaar waarin de voorstelling plaatsvond"
+        description: "Het seizoen van de productie waartoe de voorstelling behoort. Bijvoorbeeld: \
+        SELECT \
+          shows.id  \
+        FROM  \
+          production.shows,  \
+          production.productions,  \
+          production.seasons  \
+        WHERE  \
+          shows.production_id = productions.id AND  \
+          productions.season_id = seasons.id AND  \
+          seasons.id = 1678;"
         required: false
         type: "integer"
+      - name: "land_id"
+        in: "query"
+        description: "Het land van de venue waarin de show plaatsvindt"
+        required: false
+        type: "integer"
+      - name: "genre_id"
+        in: "query"
+        description: "De ids van de genres waarin de producties waartoe de voorstellingen behoren mogen vallen. Bijvoorbeeld: \
+        SELECT \
+            shows.id \
+        FROM \
+            production.shows, \
+            production.productions, \
+            production.relationships, \ 
+            production.genres \
+        WHERE \
+            shows.production_id = productions.id AND \
+            relationships.production_id = productions.id AND \
+            genres.id = relationships.genre_id AND \
+            genres.id IN (2313, 2318);"
+        required: false
+        type: "array"
+        items:
+          type: "integer"
       - name: "podiumproductie_id"
         in: "query"
         description: "een ID van een podiumproductie"
@@ -1276,4 +1319,3 @@ definitions:
         type: "string"
       fields:
         type: "string"
-        
