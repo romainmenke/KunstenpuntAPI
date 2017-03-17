@@ -1296,7 +1296,7 @@ definitions:
             artiest_naam:
               type: "string"
               description: "De naam van de main artist"
-      vanue:
+      venue:
         type: "string"
         description: "De naam van de venue bij een buitenlands concert"
       locatie:
