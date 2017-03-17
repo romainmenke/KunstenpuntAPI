@@ -113,12 +113,12 @@ paths:
         required: false
       - name: "land_id"
         in: "query"
-        description: "het land van de organisatie die aan de tentoonstelling hangt met als functie 'locatie', tenzij die organisatie geen land heeft/geen organisatie met functie 'locatie', dan kies voor het land die direct aan de tentoonstelling hangt."
+        description: "het land van de location van de organisatie die aan de tentoonstelling hangt met als functie 'locatie'"
         required: false
         type: "integer"
-      - name: "stad_id"
+      - name: "location_id"
         in: "query"
-        description: "de stad van de organisatie die aan de tentoonstelling hangt met als functie 'locatie', tenzij die organisatie geen land heeft/geen organisatie met functie 'locatie', dan kies voor de stad die direct aan de tentoonstelling hangt."
+        description: "de location van de organisatie die aan de tentoonstelling hangt met als functie 'locatie'"
         required: false
         type: "integer"
       - name: "organiteit_id"
@@ -412,11 +412,12 @@ paths:
         type: "integer"
       - name: "land_id"
         in: "query"
-        description: "De ID van het land waarin het buitenlands concert plaatsvindt"
+        description: "De ID van het land waarin het buitenlands concert plaatsvindt (gelinkte venue)"
         required: false
         type: "integer"
-      - name: "city_id"
+      - name: "cocation_id"
         in: "query"
+        description: "De ID van de location die aan de gelinkte venue hangt."
         required: false
         type: "integer"
       - name: "organiteit_id"
@@ -1259,9 +1260,12 @@ definitions:
         type: "string"
         format: "date"
         description: "De datum waarop het buitenlands concert plaatsvindt"
-      organisatie:
+      venue:
         type: "string"
-        description: "Doorgaans de speelplek waarop het buitenlands concert plaatsvindt"
+        description: "De naam van de venue"
+      location:
+        type: "string"
+        description: "De naam van de stad en het land van de location die aan de venue van het buitenlands concert hangt"
       gps:
         type: object
         description: "GPS coordinaten voor de locatie"
@@ -1292,12 +1296,12 @@ definitions:
             artiest_naam:
               type: "string"
               description: "De naam van de main artist"
-      organisatie:
+      vanue:
         type: "string"
-        description: "De organisatie bij een buitenlands concert, doorgaans de speelplek"
+        description: "De naam van de venue bij een buitenlands concert"
       locatie:
         type: "string"
-        description: "Land en stad"
+        description: "Land en stad van de venue"
       beschrijving_nl:
         type: "string"
         description: "Een vrije tekstveld waarin een omschrijving in het nederlands kan"
