@@ -1164,7 +1164,7 @@ definitions:
         type: "array"
         items:
           type: "string"
-          description: "Href links naar beelden."
+          description: "Bestandsnamen van beelden, pad naar object valt buiten API."
       toonnaam:
         type: "string"
         description: "Toonbare tekst voor een release, bv. de titel."
