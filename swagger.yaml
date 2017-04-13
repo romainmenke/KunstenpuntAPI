@@ -995,8 +995,11 @@ definitions:
         type: "string"
         description: "een toonnaam voor de activiteit, moet worden gespecifieerd per type van activiteit"
       activiteit_type:
-        type: "string"
-        description: "Het type van activiteit, bv. muziekrelease, tentoonstelling, cf. production_type"
+        type: "array"
+        description: "De types van de activiteit, bv. muziekrelease, tentoonstelling, cf. production_type en show_type"
+        items:
+          type: "string"
+          description: "showtype of productiontype"
 
   PodiumProductiesItem:
     type: "object"
