@@ -756,9 +756,6 @@ definitions:
       toonnaam:
         type: "string"
         description: "Toonbare tekst. mcv:identities.FullName, mcv:organisations.Name, dkb:people.full_name, dkb:organisations.name, dkb:venues.name"
-      toonnaam_kort:
-        type: "string"
-        description: "Eventuele afkorting van de toonnaam"
       toonnaam_internationaal:
         type: "string"
         description: "als het er is, de internationale naam"
