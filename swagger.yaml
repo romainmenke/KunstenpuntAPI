@@ -975,7 +975,7 @@ definitions:
           type: "string"
           description: "De locatie (stad, dorp, ...) waar de activiteit plaatsvond"
       beginjaar:
-        type: "string"
+        type: "integer"
         description: "Beginjaar waarin de activiteit plaatsvindt"
       tentoonstellingstype:
         type: "string"
