@@ -17,12 +17,12 @@ paths:
       summary: "Toont organiteiten binnen het kunstenlandschap."
       description: "Met deze API call kan een lijst van organiteiten met hun minimale informatie opgeroepen worden. De API levert enkel die organiteiten terug die ook in de databank KSP/FAI aangevinkt hebben. De parameters worden als AND aan elkaar gehangen; als een parameter niet gespecifieerd is dan wordt er op die parameter niet gefilterd; als twee of meer parameters gespecifieerd zijn moeten alle parameters vervuld zijn."
       parameters:
-      - name: "organiteit_naam_begint_met"
+      - name: "organization_name_starts_with"
         in: "query"
         description: "De beginletter van een organiteitnaam. Organiteiten waarvan de naam begint met een niet-alfabetisch karakter, bv. 't Ey, worden gevonden door de '#' hier mee te geven. (eerste letter van mcv:identities.Name, mcv:organisations.Name, dkb:people.name, dkb:organisations.name, dkb:venues.name)"
         required: false
         type: "string"
-      - name: "organiteit_type_id"
+      - name: "organization_type_id"
         in: "query"
         description: "IDs van organiteitstypes die allemaal moeten gevonden worden. (mcv:cms_identitytypes.ID, mcv:cms_organisationstypes.ID, dkb:people_types.id, dkb:organisation_types.id, WAT BIJ VENUES?"
         required: false
@@ -72,14 +72,14 @@ paths:
           schema:
             $ref: "#/definitions/Fout"
 
-  /organiteiten/{organiteit_id}:
+  /organiteiten/{organization_id}:
     get:
       tags:
       - "organiteit"
       summary: "Toont de beschikbare gegevens voor een specifieke organiteit."
       description: "Met deze API call wordt een 'fichebak' kaart van een specifieke organiteit opgeroepen. Dit bevat dan ook de gelinkt activiteiten."
       parameters:
-      - name: "organiteit_id"
+      - name: "organization_id"
         in: "path"
         description: "De unieke identificator van een organiteit."
         required: true
@@ -101,17 +101,17 @@ paths:
       summary: "Een lijst van solo- en groepstentoonstellingen."
       description: "Alle gegevens nodig om een lijst te maken van solo- en groepstentoonstellingen."
       parameters:
-      - name: "jaar"
+      - name: "year"
         in: "query"
         description: "Het jaar waarin een tentoonstelling plaatsvindt"
         required: false
         type: "integer"
-      - name: "maand"
+      - name: "month"
         in: "query"
         description: "De maand waarin een tentoonstelling plaatsvindt"
         type: "integer"
         required: false
-      - name: "land_id"
+      - name: "country_id"
         in: "query"
         description: "het land van de location van de organisatie die aan de tentoonstelling hangt met als functie 'locatie'"
         required: false
@@ -121,7 +121,7 @@ paths:
         description: "de location van de organisatie die aan de tentoonstelling hangt met als functie 'locatie'"
         required: false
         type: "integer"
-      - name: "organiteit_id"
+      - name: "organization_id"
         in: "query"
         description: "Een id van een organiteit om de lijst van solo- en groepstentoonstellingen\
           \ te vinden."
@@ -139,14 +139,14 @@ paths:
           schema:
             $ref: "#/definitions/Fout"
             
-  /tentoonstellingen/{activiteit_id}:
+  /tentoonstellingen/{activity_id}:
     get:
       tags:
       - "beeldendekunsten"
       summary: "De gegevens van een tentoonstelling"
       description: "Een tentoonstelling krijgt een eigen pad zodat de gegevens makkelijk opgehaald kunnen worden."
       parameters:
-      - name: "activiteit_id"
+      - name: "activity_id"
         in: "path"
         description: "De id van een specifieke tentoonstelling waarvoor de gegevens moeten opgevraagd worden"
         required: true
@@ -179,14 +179,14 @@ paths:
           schema:
             $ref: '#/definitions/Fout'
 
-  /recent_gewijzigde_activiteiten/{type_activiteit}:
+  /recent_gewijzigde_activiteiten/{activity_type}:
     get:
       tags:
       - "tools"
       summary: "Een lijst van recent gewijzigde tentoonstellingen, releases, of andere activiteiten"
       description: "Recent gewijzigde activiteiten van een bepaald type komen in dit lijstje"
       parameters:
-      - name: "type_activiteit"
+      - name: "activity_type"
         in: "path"
         description: "het type van activiteit, kan zijn 'tentoonstellingen', 'muziekreleases', 'buitenlandse_concerten', 'podiumproducties', 'podiumvoorstellingen'"
         required: true
@@ -221,14 +221,14 @@ paths:
           schema:
             $ref: '#/definitions/Fout'
   
-  /binnenkort/{type_activiteit}:
+  /binnenkort/{activity_type}:
     get:
       tags:
       - "tools"
       summary: "Een lijst van activiteiten van een bepaald type met begindatum in de nabije toekomst"
       description: "Activiteiten die een begindatum hebben binnen de 7 dagen"
       parameters:
-      - name: "type_activiteit"
+      - name: "activity_type"
         in: "path"
         description: "Het type van activiteit"
         required: true
@@ -270,12 +270,12 @@ paths:
       summary: "Om een lijst van unieke locaties te kunnen krijgen"
       description: "Unieke locaties, op land of op stadsniveau"
       parameters:
-        - name: "stadsniveau"
+        - name: "include_cities"
           type: "boolean"
           required: true
           description: "moeten de locaties tot op stadsniveau gespecifieerd worden?"
           in: "query"
-        - name: "type_activiteit"
+        - name: "activity_type"
           type: "string"
           required: false
           description: "om de lijst van locaties in te perken tot die waarvoor er ook een activiteit geregistreerd staat"
@@ -328,12 +328,12 @@ paths:
         required: false
         type: "string"
         format: "date"
-      - name: "jaar"
+      - name: "year"
         in: "query"
         description: "Het jaar waarin de release verschenen is"
         required: false
         type: "integer"
-      - name: "organiteit_id"
+      - name: "organization_id"
         in: "query"
         description: "De organiteit waarmee het album gerelateerd mag zijn. Deze query \
           \ levert ook terug wat het type van relatie is tussen de release en de organiteit."
@@ -372,17 +372,17 @@ paths:
           schema:
             $ref: "#/definitions/Fout"
       
-  /muziekreleases/{activiteit_id}:
+  /muziekreleases/{activity_id}:
     get:
       tags:
       - "muziek"
       summary: "Geeft een detailzicht op een specifieke release."
       description: "Door de unieke id van een release mee te geven wordt een detailzicht\
         \ van de release getoond. Gerelateerde informatie zoals de verbonden organiteiten\
-        \ (groep, muzikanten, platenfirma) kunnen opgezocht worden met /organiteiten/?activiteit_id=:activiteit_id.\
-        \ Voor de gerelateerde genres kan je zoeken met /genres/?activiteit_id=:activiteit_id."
+        \ (groep, muzikanten, platenfirma) kunnen opgezocht worden met /organiteiten/?activity_id=:activity_id.\
+        \ Voor de gerelateerde genres kan je zoeken met /genres/?activity_id=:activity_id."
       parameters:
-      - name: "activiteit_id"
+      - name: "activity_id"
         in: "path"
         description: "De unieke identificator voor een release."
         required: true
@@ -405,22 +405,22 @@ paths:
       description: "Alle gegevens nodig om een lijst te maken met een overzicht van\
         \ buitenlands concerten."
       parameters:
-      - name: "jaar"
+      - name: "year"
         in: "query"
         description: "Het jaar waarin het buitenlands concert plaatsvindt"
         required: false
         type: "integer"
-      - name: "land_id"
+      - name: "country_id"
         in: "query"
         description: "De ID van het land waarin het buitenlands concert plaatsvindt (gelinkte venue)"
         required: false
         type: "integer"
-      - name: "cocation_id"
+      - name: "location_id"
         in: "query"
         description: "De ID van de location die aan de gelinkte venue hangt."
         required: false
         type: "integer"
-      - name: "organiteit_id"
+      - name: "organization_id"
         in: "query"
         description: "Een id van een organiteit om de buitenlandse concerten van te\
           \ vinden."
@@ -464,14 +464,14 @@ paths:
           schema:
             $ref: "#/definitions/Fout"
 
-  /buitenlandse_concerten/{activiteit_id}:
+  /buitenlandse_concerten/{activity_id}:
     get:
       tags:
       - "muziek"
       summary: "De gegevens van een buitenlands concert"
       description: "Een buitenlands concert krijgt een eigen pad zodat de gegevens makkelijk opgehaald kunnen worden."
       parameters:
-      - name: "activiteit_id"
+      - name: "activity_id"
         in: "path"
         description: "De id van een specifiek buitenlands concert waarvoor de gegevens moeten opgevraagd worden"
         required: true
@@ -495,7 +495,7 @@ paths:
         \ eventueel voor een specifieke organiteit."
       operationId: "controllers.default_controller.podiumproducties_get"
       parameters:
-      - name: "seizoen_id"
+      - name: "season_id"
         in: "query"
         description: "Een id van een seizoen"
         required: false
@@ -507,17 +507,17 @@ paths:
         type: "array"
         items:
           type: "integer"
-      - name: "activiteit_naam_begint_met"
+      - name: "activity_name_starts_with"
         in: "query"
         description: "Eerste letter waarmee de podiumproductietitel moet beginnen"
         required: false
         type: "string"
-      - name: "organiteit_id"
+      - name: "organization_id"
         in: "query"
         description: "Een id van een organiteit om de podium producties te vinden."
         required: false
         type: "integer"
-      - name: "podium_productie_id"
+      - name: "production_id"
         in: "query"
         description: "Een id van een podiumproductie om de gerelateerde producties\
           \ te vinden, bv. een herneming."
@@ -561,14 +561,14 @@ paths:
           schema:
             $ref: "#/definitions/Fout"
 
-  /podiumproducties/{podium_productie_id}:
+  /podiumproducties/{production_id}:
     get:
       tags:
       - "podium"
       summary: "Een specifiek zicht op een podium productie."
       description: "Alle gegevens nodig om een specifieke podium productie te tonen."
       parameters:
-      - name: "podium_productie_id"
+      - name: "production_id"
         in: "path"
         description: "ID van een podium productie"
         required: true
@@ -592,7 +592,7 @@ paths:
         \ eventueel voor een specifieke podium productie of een organiteit."
       operationId: "controllers.default_controller.podiumvoorstellingen_get"
       parameters:
-      - name: "seizoen_id"
+      - name: "season_id"
         in: "query"
         description: "Het seizoen van de productie waartoe de voorstelling behoort. Bijvoorbeeld: \
         SELECT \
@@ -607,7 +607,7 @@ paths:
           seasons.id = 1678;"
         required: false
         type: "integer"
-      - name: "land_id"
+      - name: "country_id"
         in: "query"
         description: "Het land van de venue waarin de show plaatsvindt"
         required: false
@@ -631,12 +631,12 @@ paths:
         type: "array"
         items:
           type: "integer"
-      - name: "podiumproductie_id"
+      - name: "production_id"
         in: "query"
         description: "een ID van een podiumproductie"
         required: false
         type: "integer"
-      - name: "organiteit_id"
+      - name: "organization_id"
         in: "query"
         description: "Een id van een organiteit om de podium voorstellingen te vinden.\
           \ Linkt ook door van een productie die bij een organiteit hoort."
@@ -680,14 +680,14 @@ paths:
           schema:
             $ref: "#/definitions/Fout"
 
-  /podiumvoorstellingen/{activiteit_id}:
+  /podiumvoorstellingen/{activity_id}:
     get:
       tags:
       - "podium"
       summary: "De gegevens van een podiumvoorstelling"
       description: "Een podiumvoorstelling krijgt een eigen pad zodat de gegevens makkelijk opgehaald kunnen worden."
       parameters:
-      - name: "activiteit_id"
+      - name: "activity_id"
         in: "path"
         description: "De id van een specifieke podiumvoorstelling waarvoor de gegevens moeten opgevraagd worden"
         required: true
