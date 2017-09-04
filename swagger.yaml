@@ -716,19 +716,17 @@ definitions:
         type: "array"
         description: "Instrumenten die door organiteit bespeeld worden."
         items:
-          type: "string"
+          $ref: "#/definitions/LinkedData"
       organiteit_type:
         type: "array"
         description: "Lijst van de organiteitstypes die aan een organiteit hangen. mcv:cms_identitytypes.Name, mcv:cms_organisationtypes.Name, dkb:people_types.name, dkb:organisation_types.name"
         items:
-          type: "string"
-          description: "Organiteitstype."
+          $ref: "#/definitions/LinkedData"
       genres:
         type: "array"
         description: "Lijst van genres die aan een organiteit kan hangen. mcv join via dblinkcat=28, dkb:people, dkb:organisations, dkb:venues"
         items:
-          type: "string"
-          description: "Genre"
+          $ref: "#/definitions/LinkedData"
       startjaar:
         type: "integer"
         description: "Geboortejaar of startjaar. mcv:identities, mcv:organisations, dkb:people.birth_date_id <> dkb:date_isaars.year, dkb:organisations, dkb:venues"
@@ -869,13 +867,12 @@ definitions:
         type: "array"
         description: "Lijst van genres die aan een organiteit kan hangen. mcv:identities, mcv:organisations, dkb:people, dkb:organisations, dkb:venues"
         items:
-          type: "string"
-          description: "Genre"
+          $ref: "#/definitions/LinkedData"
       instrumenten:
         type: "array"
         description: "Instrumenten die door organiteit bespeeld worden. mcv:identities"
         items:
-          type: "string"
+          $ref: "#/definitions/LinkedData"
       activiteiten:
         type: "object"
         description: "Overzicht van de activiteiten van een organiteit"
@@ -995,8 +992,7 @@ definitions:
         type: "array"
         description: "De types van de activiteit, bv. muziekrelease, tentoonstelling, cf. production_type en show_type"
         items:
-          type: "string"
-          description: "showtype of productiontype"
+          $ref: "#/definitions/LinkedData"
 
   PodiumProductiesItem:
     type: "object"
@@ -1009,8 +1005,8 @@ definitions:
         type: "string"
         description: "Toonbare tekst voor een productie namelijk de titel."
       seizoen:
-        type: "string"
-        description: "String van seizoen waarin de productie plaatsvindt."
+        $ref: "#/definitions/LinkedData"
+        description: "Seizoen waarin de productie plaatsvindt."
       seizoen_beginjaar:
         type: "integer"
         description: "Beginjaar van het seizoen"
@@ -1025,7 +1021,7 @@ definitions:
         type: "string"
         description: "Toonbare tekst voor een productie namelijk de titel."
       seizoen:
-        type: "string"
+        $ref: "#/definitions/LinkedData"
         description: "String van seizoen waarin de productie plaatsvindt."
       seizoen_beginjaar:
         type: "integer"
@@ -1132,9 +1128,12 @@ definitions:
         items:
           type: "object"
           properties:
+            id:
+              type: "integer"
+              description: "De ID van de main artist van een release"
             naam:
               type: "string"
-              description: "De fullnaam van de main artist van een release"
+              description: "De fullnaam van de main artist van een release, enkel als die een KSP/FAI kanaal heeft"
             context:
               type: "string"
               description: "De gelinkte context van main artist van een release"
@@ -1203,9 +1202,9 @@ definitions:
         type: "string"
         description: "Engelstalige perstekst"
       tracks:
-        $ref: "#/definitions/Release_tracks"
+        $ref: "#/definitions/ReleaseTracks"
   
-  Release_tracks_lijst:
+  ReleaseTracksLijst:
     properties:
       nummer:
         type: "string"
@@ -1231,13 +1230,13 @@ definitions:
         type: "string"
         description: "Versie informatie over de track."
         
-  Release_tracks:
+  ReleaseTracks:
     properties:
       lijst:
         type: "array"
         description: "De tracklijst op de release."
         items:
-          $ref: "#/definitions/Release_tracks_lijst"
+          $ref: "#/definitions/ReleaseTracksLijst"
       plat:
         type: "string"
         description: "Platte tekst representatie van tracklijst"
@@ -1254,7 +1253,7 @@ definitions:
       artiesten:
         type: "array"
         items:
-          type: "string"
+          $ref: "#/definitions/LinkedData"
           description: "De main artist die aan het buitenlands concert hangt"
       datum:
         type: "string"
@@ -1323,3 +1322,13 @@ definitions:
         type: "string"
       fields:
         type: "string"
+
+  LinkedData:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      label_nl:
+        type: "string"
+      label_en:
+          type: "string"
