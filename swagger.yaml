@@ -72,7 +72,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /organization/{organization_id}:
+  /organizations/{organization_id}:
     get:
       tags:
         - "Organization"
@@ -342,7 +342,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /production:
+  /productions:
     get:
       tags:
         - "Performance"
@@ -417,7 +417,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /production/{production_id}:
+  /productions/{production_id}:
     get:
       tags:
         - "Performance"
