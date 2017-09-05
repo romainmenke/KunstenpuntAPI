@@ -10,19 +10,19 @@ schemes:
 produces:
 - "application/json"
 paths:
-  /organizations:
+  /organities:
     get:
       tags:
-        - "Organization"
+        - "Organity"
       summary: "Toont organiteiten binnen het kunstenlandschap."
       description: "Met deze API call kan een lijst van organiteiten met hun minimale informatie opgeroepen worden. De API levert enkel die organiteiten terug die ook in de databank KSP/FAI aangevinkt hebben. De parameters worden als AND aan elkaar gehangen; als een parameter niet gespecifieerd is dan wordt er op die parameter niet gefilterd; als twee of meer parameters gespecifieerd zijn moeten alle parameters vervuld zijn."
       parameters:
-      - name: "organization_name_starts_with"
+      - name: "organity_name_starts_with"
         in: "query"
         description: "De beginletter van een organiteitnaam. Organiteiten waarvan de naam begint met een niet-alfabetisch karakter, bv. 't Ey, worden gevonden door de '#' hier mee te geven. (eerste letter van mcv:identities.Name, mcv:organisations.Name, dkb:people.name, dkb:organisations.name, dkb:venues.name)"
         required: false
         type: "string"
-      - name: "organization_type_id"
+      - name: "organity_type_id"
         in: "query"
         description: "IDs van organiteitstypes die allemaal moeten gevonden worden. (mcv:cms_identitytypes.ID, mcv:cms_organisationstypes.ID, dkb:people_types.id, dkb:organisation_types.id, WAT BIJ VENUES?"
         required: false
@@ -62,7 +62,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/OrganizationSummary"
+              $ref: "#/definitions/OrganitySummary"
           headers:
             x_total_count:
               type: "integer"
@@ -72,14 +72,14 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /organizations/{organization_id}:
+  /organities/{organity_id}:
     get:
       tags:
-        - "Organization"
+        - "Organity"
       summary: "Toont de beschikbare gegevens voor een specifieke organiteit."
       description: "Met deze API call wordt een 'fichebak' kaart van een specifieke organiteit opgeroepen. Dit bevat dan ook de gelinkt activiteiten."
       parameters:
-      - name: "organization_id"
+      - name: "organity_id"
         in: "path"
         description: "De unieke identificator van een organiteit."
         required: true
@@ -88,7 +88,7 @@ paths:
         200:
           description: "De gegevens van een specifieke organiteit. Welke gegevens getoond worden staat beschreven in het Model 'Organiteit'."
           schema:
-            $ref: "#/definitions/Organization"
+            $ref: "#/definitions/Organity"
         default:
           description: "Onverwachte fout."
           schema:
@@ -121,7 +121,7 @@ paths:
         description: "de location van de organisatie die aan de tentoonstelling hangt met als functie 'locatie'"
         required: false
         type: "integer"
-      - name: "organization_id"
+      - name: "organity_id"
         in: "query"
         description: "Een id van een organiteit om de lijst van solo- en groepstentoonstellingen\
           \ te vinden."
@@ -189,7 +189,7 @@ paths:
         description: "Het jaar waarin de release verschenen is"
         required: false
         type: "integer"
-      - name: "organization_id"
+      - name: "organity_id"
         in: "query"
         description: "De organiteit waarmee het album gerelateerd mag zijn. Deze query \
           \ levert ook terug wat het type van relatie is tussen de release en de organiteit."
@@ -276,7 +276,7 @@ paths:
         description: "De ID van de location die aan de gelinkte venue hangt."
         required: false
         type: "integer"
-      - name: "organization_id"
+      - name: "organity_id"
         in: "query"
         description: "Een id van een organiteit om de buitenlandse concerten van te\
           \ vinden."
@@ -368,7 +368,7 @@ paths:
         description: "Eerste letter waarmee de podiumproductietitel moet beginnen"
         required: false
         type: "string"
-      - name: "organization_id"
+      - name: "organity_id"
         in: "query"
         description: "Een id van een organiteit om de podium producties te vinden."
         required: false
@@ -492,7 +492,7 @@ paths:
         description: "een ID van een podiumproductie"
         required: false
         type: "integer"
-      - name: "organization_id"
+      - name: "organity_id"
         in: "query"
         description: "Een id van een organiteit om de podium voorstellingen te vinden.\
           \ Linkt ook door van een productie die bij een organiteit hoort."
@@ -672,7 +672,7 @@ paths:
             $ref: '#/definitions/Error'
 
 definitions:
-  OrganizationSummary:
+  OrganitySummary:
     type: "object"
     properties:
       id:
@@ -686,7 +686,7 @@ definitions:
         description: "Instrumenten die door organiteit bespeeld worden."
         items:
           $ref: "#/definitions/LinkedData"
-      organization_types:
+      organity_types:
         type: "array"
         description: "Lijst van de organiteitstypes die aan een organiteit hangen. mcv:cms_identitytypes.Name, mcv:cms_organisationtypes.Name, dkb:people_types.name, dkb:organisation_types.name"
         items:
@@ -714,7 +714,7 @@ definitions:
         type: "boolean"
         description: "Aanduiding of de organiteit actief is. mcv:identities, mcv:organisations, dkb:people, dkb:organisations, dkb:venues"
 
-  Organization:
+  Organity:
     type: "object"
     properties:
       id:
@@ -776,7 +776,7 @@ definitions:
       description_en:
         type: "string"
         description: "Korte beschrijving in het Engels, cf. _nl beschrijving maar dan met _en"
-      related_organizations:
+      related_organities:
         type: "array"
         description: "Organiteiten gelinkt aan de getoonde organiteit, waarbij de link ook een type kan hebben, bv. 'is lid van' of 'verderzetting van'"
         items:
@@ -997,7 +997,7 @@ definitions:
       start_year:
         type: "integer"
         description: "Beginjaar van het seizoen"
-      organizations:
+      organities:
         type: "array"
         description: "Gelinkte organiteiten"
         items:
