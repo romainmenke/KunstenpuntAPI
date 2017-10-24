@@ -22,21 +22,21 @@ paths:
         description: "De beginletter van een organiteitnaam. Organiteiten waarvan de naam begint met een niet-alfabetisch karakter, bv. 't Ey, worden gevonden door de '#' hier mee te geven. (eerste letter van mcv:identities.Name, mcv:organisations.Name, dkb:people.name, dkb:organisations.name, dkb:venues.name)"
         required: false
         type: "string"
-      - name: "organity_types"
+      - name: "organity_type_ids"
         in: "query"
         description: "IDs van organiteitstypes die allemaal moeten gevonden worden. (mcv:cms_identitytypes.ID, mcv:cms_organisationstypes.ID, dkb:people_types.id, dkb:organisation_types.id, WAT BIJ VENUES?"
         required: false
         type: "array"
         items:
           type: "string"
-      - name: "genres"
+      - name: "genre_ids"
         in: "query"
         description: "De ids van de genres waarin de organiteiten mogen vallen."
         required: false
         type: "array"
         items:
           type: "integer"
-      - name: "instruments"
+      - name: "instrument_ids"
         in: "query"
         description: "ID van een instrument, enkel mogelijk bij mcv:identities"
         required: false
@@ -681,17 +681,17 @@ definitions:
       label:
         type: "string"
         description: "Een toonbare naam voor de organiteit. mcv:identities.FullName, mcv:organisations.Name, dkb:people.full_name, dkb:organisations.name, dkb:venues.name"
-      instruments:
+      instrument_ids:
         type: "array"
         description: "Instrumenten die door organiteit bespeeld worden."
         items:
           $ref: "#/definitions/LinkedData"
-      organity_types:
+      organity_type_ids:
         type: "array"
         description: "Lijst van de organiteitstypes die aan een organiteit hangen. mcv:cms_identitytypes.Name, mcv:cms_organisationtypes.Name, dkb:people_types.name, dkb:organisation_types.name"
         items:
           $ref: "#/definitions/LinkedData"
-      genres:
+      genre_ids:
         type: "array"
         description: "Lijst van genres die aan een organiteit kan hangen. mcv join via dblinkcat=28, dkb:people, dkb:organisations, dkb:venues"
         items:
