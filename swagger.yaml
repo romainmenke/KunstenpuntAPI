@@ -16,27 +16,28 @@ paths:
         - "Organity"
       summary: "Toont organiteiten binnen het kunstenlandschap."
       description: "Met deze API call kan een lijst van organiteiten met hun minimale informatie opgeroepen worden. De API levert enkel die organiteiten terug die ook in de databank KSP/FAI aangevinkt hebben. De parameters worden als AND aan elkaar gehangen; als een parameter niet gespecifieerd is dan wordt er op die parameter niet gefilterd; als twee of meer parameters gespecifieerd zijn moeten alle parameters vervuld zijn."
+      operationId: "organities_list"
       parameters:
       - name: "organity_name_starts_with"
         in: "query"
         description: "De beginletter van een organiteitnaam. Organiteiten waarvan de naam begint met een niet-alfabetisch karakter, bv. 't Ey, worden gevonden door de '#' hier mee te geven. (eerste letter van mcv:identities.Name, mcv:organisations.Name, dkb:people.name, dkb:organisations.name, dkb:venues.name)"
         required: false
         type: "string"
-      - name: "organity_type_ids"
+      - name: "organity_type_id"
         in: "query"
         description: "IDs van organiteitstypes die allemaal moeten gevonden worden. (mcv:cms_identitytypes.ID, mcv:cms_organisationstypes.ID, dkb:people_types.id, dkb:organisation_types.id, WAT BIJ VENUES?"
         required: false
         type: "array"
         items:
           type: "string"
-      - name: "genre_ids"
+      - name: "genre_id"
         in: "query"
         description: "De ids van de genres waarin de organiteiten mogen vallen."
         required: false
         type: "array"
         items:
           type: "integer"
-      - name: "instrument_ids"
+      - name: "instrument_id"
         in: "query"
         description: "ID van een instrument, enkel mogelijk bij mcv:identities"
         required: false
@@ -78,6 +79,7 @@ paths:
         - "Organity"
       summary: "Toont de beschikbare gegevens voor een specifieke organiteit."
       description: "Met deze API call wordt een 'fichebak' kaart van een specifieke organiteit opgeroepen. Dit bevat dan ook de gelinkt activiteiten."
+      operationId: "organities_detail"
       parameters:
       - name: "organity_id"
         in: "path"
@@ -100,6 +102,7 @@ paths:
         - "Visual Arts"
       summary: "Een lijst van solo- en groepstentoonstellingen."
       description: "Alle gegevens nodig om een lijst te maken van solo- en groepstentoonstellingen."
+      operationId: "exhibitions_list"
       parameters:
       - name: "year"
         in: "query"
@@ -145,6 +148,7 @@ paths:
         - "Visual Arts"
       summary: "De gegevens van een tentoonstelling"
       description: "Een tentoonstelling krijgt een eigen pad zodat de gegevens makkelijk opgehaald kunnen worden."
+      operationId: "exhibitions_detail"
       parameters:
       - name: "activity_id"
         in: "path"
@@ -171,6 +175,7 @@ paths:
         \ binnen de discipline van de Muziek. De lijst van releases kan ingeperkt\
         \ worden door een datum range op te geven, en/of door een specifieke organiteit\
         \ aan te geven."
+      operationId: "releases_list"
       parameters:
       - name: "from_date"
         in: "query"
@@ -237,6 +242,7 @@ paths:
         \ van de release getoond. Gerelateerde informatie zoals de verbonden organiteiten\
         \ (groep, muzikanten, platenfirma) kunnen opgezocht worden met /organiteiten/?activity_id=:activity_id.\
         \ Voor de gerelateerde genres kan je zoeken met /genres/?activity_id=:activity_id."
+      operationId: "releases_detail"
       parameters:
       - name: "activity_id"
         in: "path"
@@ -260,6 +266,7 @@ paths:
       summary: "Een lijst van buitenlands concerten."
       description: "Alle gegevens nodig om een lijst te maken met een overzicht van\
         \ buitenlands concerten."
+      operationId: "concerts_list"
       parameters:
       - name: "year"
         in: "query"
@@ -326,6 +333,7 @@ paths:
         - "Music"
       summary: "De gegevens van een buitenlands concert"
       description: "Een buitenlands concert krijgt een eigen pad zodat de gegevens makkelijk opgehaald kunnen worden."
+      operationId: "concerts_detail"
       parameters:
       - name: "activity_id"
         in: "path"
@@ -349,7 +357,7 @@ paths:
       summary: "Een lijst van podium producties"
       description: "Alle gegevens nodig om een lijst te maken van podium producties,\
         \ eventueel voor een specifieke organiteit."
-      operationId: "controllers.default_controller.podiumproducties_get"
+      operationId: "productions_get"
       parameters:
       - name: "season_id"
         in: "query"
@@ -423,6 +431,7 @@ paths:
         - "Performance"
       summary: "Een specifiek zicht op een podium productie."
       description: "Alle gegevens nodig om een specifieke podium productie te tonen."
+      operationId: "productions_detail"
       parameters:
       - name: "production_id"
         in: "path"
@@ -444,9 +453,8 @@ paths:
       tags:
         - "Performance"
       summary: "Een lijst van podium voorstellingen"
-      description: "Alle gegevens nodig om een lijst te maken van podium voorstellingen,\
-        \ eventueel voor een specifieke podium productie of een organiteit."
-      operationId: "controllers.default_controller.podiumvoorstellingen_get"
+      description: "Alle gegevens nodig om een lijst te maken van podium voorstellingen, eventueel voor een specifieke podium productie of een organiteit."
+      operationId: "shows_list"
       parameters:
       - name: "season_id"
         in: "query"
@@ -542,6 +550,7 @@ paths:
         - "Performance"
       summary: "De gegevens van een podiumvoorstelling"
       description: "Een podiumvoorstelling krijgt een eigen pad zodat de gegevens makkelijk opgehaald kunnen worden."
+      operationId: "shows_detail"
       parameters:
       - name: "activity_id"
         in: "path"
@@ -681,17 +690,17 @@ definitions:
       label:
         type: "string"
         description: "Een toonbare naam voor de organiteit. mcv:identities.FullName, mcv:organisations.Name, dkb:people.full_name, dkb:organisations.name, dkb:venues.name"
-      instrument_ids:
+      instruments:
         type: "array"
         description: "Instrumenten die door organiteit bespeeld worden."
         items:
           $ref: "#/definitions/LinkedData"
-      organity_type_ids:
+      organity_types:
         type: "array"
         description: "Lijst van de organiteitstypes die aan een organiteit hangen. mcv:cms_identitytypes.Name, mcv:cms_organisationtypes.Name, dkb:people_types.name, dkb:organisation_types.name"
         items:
           $ref: "#/definitions/LinkedData"
-      genre_ids:
+      genres:
         type: "array"
         description: "Lijst van genres die aan een organiteit kan hangen. mcv join via dblinkcat=28, dkb:people, dkb:organisations, dkb:venues"
         items:
@@ -710,7 +719,7 @@ definitions:
             type: "number"
           longitude:
             type: "number"
-      active:
+      is_active:
         type: "boolean"
         description: "Aanduiding of de organiteit actief is. mcv:identities, mcv:organisations, dkb:people, dkb:organisations, dkb:venues"
 
@@ -916,9 +925,7 @@ definitions:
         type: "integer"
         description: "Een unieke identificator van de tentoonstelling"
       artist:
-        type: "string"
         $ref: "#/definitions/LinkedData"
-        description: "De naam van de gelinkte kunstenaar"
       title:
         type: "string"
         description: "Een toonbare naam voor de tentoonstelling"
@@ -977,7 +984,6 @@ definitions:
         description: "Toonbare tekst voor een productie namelijk de titel."
       season:
         $ref: "#/definitions/LinkedData"
-        description: "Seizoen waarin de productie plaatsvindt."
       start_year:
         type: "integer"
         description: "Beginjaar van het seizoen"
@@ -993,7 +999,6 @@ definitions:
         description: "Toonbare tekst voor een productie namelijk de titel."
       season:
         $ref: "#/definitions/LinkedData"
-        description: "String van seizoen waarin de productie plaatsvindt."
       start_year:
         type: "integer"
         description: "Beginjaar van het seizoen"
@@ -1160,8 +1165,6 @@ definitions:
         format: "date"
         description: "Datum van de release."
       country:
-        type: "string"
-        description: "Land waar de release is uitgebracht."
         $ref: "#/definitions/LinkedData"
       description_nl:
         type: "string"
@@ -1228,7 +1231,6 @@ definitions:
         type: "array"
         items:
           $ref: "#/definitions/LinkedData"
-          description: "De main artist die aan het buitenlands concert hangt"
       date:
         type: "string"
         format: "date"
@@ -1262,7 +1264,6 @@ definitions:
         description: "De main artiesten bij een buitenlands concert"
         items:
           $ref: "#/definitions/LinkedData"
-          description: "De main artiesten bij een buitenlands concert"
       venue:
         type: "string"
         description: "De naam van de venue bij een buitenlands concert"
