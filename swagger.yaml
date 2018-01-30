@@ -101,6 +101,13 @@ paths:
       summary: "Een lijst van solo- en groepstentoonstellingen."
       description: "Alle gegevens nodig om een lijst te maken van solo- en groepstentoonstellingen."
       parameters:
+      - name: "production_type_id"
+        in: "query"
+        description: "IDs van production types die allemaal moeten gevonden worden. (OR query)"
+        required: false
+        type: "array"
+        items:
+          type: "string"
       - name: "year"
         in: "query"
         description: "Het jaar waarin een tentoonstelling plaatsvindt"
