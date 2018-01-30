@@ -93,81 +93,6 @@ paths:
           description: "Onverwachte fout."
           schema:
             $ref: "#/definitions/Error"
-
-  /exhibitions:
-    get:
-      tags:
-        - "Visual Arts"
-      summary: "Een lijst van solo- en groepstentoonstellingen."
-      description: "Alle gegevens nodig om een lijst te maken van solo- en groepstentoonstellingen."
-      parameters:
-      - name: "production_type_id"
-        in: "query"
-        description: "IDs van production types die allemaal moeten gevonden worden. (OR query)"
-        required: false
-        type: "array"
-        items:
-          type: "string"
-      - name: "year"
-        in: "query"
-        description: "Het jaar waarin een tentoonstelling plaatsvindt"
-        required: false
-        type: "integer"
-      - name: "month"
-        in: "query"
-        description: "De maand waarin een tentoonstelling plaatsvindt"
-        type: "integer"
-        required: false
-      - name: "country_id"
-        in: "query"
-        description: "het land van de location van de organisatie die aan de tentoonstelling hangt met als functie 'locatie'"
-        required: false
-        type: "integer"
-      - name: "location_id"
-        in: "query"
-        description: "de location van de organisatie die aan de tentoonstelling hangt met als functie 'locatie'"
-        required: false
-        type: "integer"
-      - name: "organity_id"
-        in: "query"
-        description: "Een id van een organiteit om de lijst van solo- en groepstentoonstellingen\
-          \ te vinden."
-        required: false
-        type: "integer"
-      responses:
-        200:
-          description: "Een overzichtslijst van tentoonstellingen."
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/ExhibitionSummary"
-        default:
-          description: "Onverwachte fout"
-          schema:
-            $ref: "#/definitions/Error"
-
-  /exhibitions/{activity_id}:
-    get:
-      tags:
-        - "Visual Arts"
-      summary: "De gegevens van een tentoonstelling"
-      description: "Een tentoonstelling krijgt een eigen pad zodat de gegevens makkelijk opgehaald kunnen worden."
-      parameters:
-      - name: "activity_id"
-        in: "path"
-        description: "De id van een specifieke tentoonstelling waarvoor de gegevens moeten opgevraagd worden"
-        required: true
-        type: "integer"
-      responses:
-        200:
-          description: "De gegevens van een specifiek tentoonstelling."
-          schema:
-            $ref: "#/definitions/Exhibition"
-        default:
-          description: "Onverwachte fout"
-          schema:
-            $ref: "#/definitions/Error"
-
   /releases:
     get:
       tags:
@@ -358,6 +283,13 @@ paths:
         \ eventueel voor een specifieke organiteit."
       operationId: "controllers.default_controller.podiumproducties_get"
       parameters:
+      - name: "production_type_id"
+        in: "query"
+        description: "IDs van production types die allemaal moeten gevonden worden. (OR query)"
+        required: false
+        type: "array"
+        items:
+          type: "string"
       - name: "season_id"
         in: "query"
         description: "Een id van een seizoen"
@@ -365,36 +297,46 @@ paths:
         type: "integer"
       - name: "genre_id"
         in: "query"
-        description: "De ids van de genres waarin de podiumproducties mogen vallen (OR dus)."
+        description: "De ids van de genres waarin de producties mogen vallen (OR dus)."
         required: false
         type: "array"
         items:
           type: "integer"
       - name: "activity_name_starts_with"
         in: "query"
-        description: "Eerste letter waarmee de podiumproductietitel moet beginnen"
+        description: "Eerste letter waarmee de productietitel moet beginnen"
         required: false
         type: "string"
       - name: "organity_id"
         in: "query"
-        description: "Een id van een organiteit om de podium producties te vinden."
+        description: "Een id van een organiteit om de producties te vinden."
         required: false
         type: "integer"
       - name: "production_id"
         in: "query"
-        description: "Een id van een podiumproductie om de gerelateerde producties\
+        description: "Een id van een productie om de gerelateerde producties\
           \ te vinden, bv. een herneming."
+        required: false
+        type: "integer"
+      - name: "country_id"
+        in: "query"
+        description: "land van de productie of van de gerelateerd organisatie (hangt af van productie type)"
+        required: false
+        type: "integer"
+      - name: "location_id"
+        in: "query"
+        description: "locatie van de productie of van de gerelateerd organisatie (hangt af van productie type)"
         required: false
         type: "integer"
       - name: "from_date"
         in: "query"
-        description: "De vroegste datum waarop de podiumproductie mag plaatsvinden."
+        description: "De vroegste datum waarop de productie mag plaatsvinden."
         required: false
         type: "string"
         format: "date"
       - name: "until_date"
         in: "query"
-        description: "De laatste datum waarop de podiumproductie mag plaatsvinden."
+        description: "De laatste datum waarop de productie mag plaatsvinden."
         required: false
         type: "string"
         format: "date"
@@ -877,85 +819,6 @@ definitions:
             items:
               $ref: "#/definitions/ProductionSummary"
 
-  ExhibitionSummary:
-    type: "object"
-    description: "Een tentoonstellingsfiche"
-    properties:
-      id:
-        type: "integer"
-        description: "Een unieke identificator van de tentoonstelling"
-      artists:
-        type: "array"
-        items:
-          $ref: "#/definitions/LinkedData"
-      title:
-        type: "string"
-        description: "Een toonbare naam voor de tentoonstelling"
-      spaces:
-        type: "array"
-        description: "De naam van de ruimtes waar de activiteit plaatsgevonden heeft"
-        items:
-          type: "string"
-          description: "De ruimte (organisatie, venue, ...) waar dit plaatsvond"
-      locations:
-        type: "string"
-        description: "De (fysieke) locaties (stad, land) waar de activiteit plaatsgevonden heeft."
-      start_year:
-        type: "integer"
-        description: "Beginjaar van de tentoonstelling."
-      exhibition_type:
-        type: "string"
-        description: "of dit een solo dan wel een groepstentoonstelling is, cf. production_type"
-      gps:
-        type: object
-        description: "GPS coordinaten voor de locatie"
-        properties:
-          latitude:
-            type: "number"
-          longitude:
-            type: "number"
-
-  Exhibition:
-    type: "object"
-    description: "Een tentoonstellingsfiche"
-    properties:
-      id:
-        type: "integer"
-        description: "Een unieke identificator van de tentoonstelling"
-      artist:
-        type: "string"
-        $ref: "#/definitions/LinkedData"
-        description: "De naam van de gelinkte kunstenaar"
-      title:
-        type: "string"
-        description: "Een toonbare naam voor de tentoonstelling"
-      spaces:
-        type: "array"
-        description: "De ruimtes waar de activiteit plaatsgevonden heeft"
-        items:
-          type: "string"
-          description: "De ruimte (organisatie, venue, ...) waar dit plaatsvond"
-      locations:
-        type: "array"
-        description: "De (fysieke) locaties (stad, land) waar de activiteit plaatsgevonden heeft."
-        items:
-          type: "string"
-          description: "De locatie (stad, dorp, ...) waar de activiteit plaatsvond"
-      start_year:
-        type: "integer"
-        description: "Beginjaar waarin de activiteit plaatsvindt"
-      exhibition_type:
-        type: "string"
-        description: "of dit een solo dan wel een groepstentoonstelling, cf. production_type is"
-      gps:
-        type: object
-        description: "GPS coordinaten voor de locatie"
-        properties:
-          latitude:
-            type: "number"
-          longitude:
-            type: "number"
-
   ActivitySummary:
     type: "object"
     description: "generieke korte beschrijving van een activiteit"
@@ -1004,6 +867,14 @@ definitions:
       start_year:
         type: "integer"
         description: "Beginjaar van het seizoen"
+      production_types:
+        type: "array"
+        description: "productie types"
+        items:
+          $ref: "#/definitions/LinkedData"
+      locations:
+        type: "string"
+        description: "De (fysieke) locaties (stad, land) waar de productie plaatsgevonden heeft."
       organities:
         type: "array"
         description: "Gelinkte organiteiten"
